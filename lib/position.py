@@ -1,0 +1,54 @@
+
+import math
+
+class Pos:
+    def __init__(self,x:int,y:int) -> None:
+        self.__x = x
+        self.__y = y
+    def value_error(self):
+        raise ValueError("整数以外は適切ではありません")
+    @property
+    def x(self):
+        return self.__x
+    @x.setter
+    def x(self,value):
+        if isinstance(value,int):
+            self.__x = value
+        else:
+            self.value_error()
+    @property
+    def y(self):
+        return self.__y
+    @y.setter
+    def y(self,value):
+        if isinstance(value,int):
+            self.__y = value
+        else:
+            self.value_error()
+    def above(self,increase):
+        return Pos(self.x,self.y - increase)
+    def below(self,increase):
+        return Pos(self.x,self.y + increase)
+    def right(self,increase):
+        return Pos(self.x + increase, self.y)
+    def left(self,increase):
+        return Pos(self.x - increase,self.y)
+    def move(self,x,y):
+        self.x = x
+        self.y = y
+    def movePos(self,pos):
+        if isinstance(pos,Pos):
+            self.x = pos.x
+            self.y = pos.y
+    def equals(self,pos):
+        if isinstance(pos,Pos):
+            return pos.x == self.x and pos.y == self.y
+        return False
+    def toTuple(self):
+        return (self.x,self.y)
+    def distanceTo(self, to):
+        if isinstance(to, Pos):
+            return math.sqrt(pow(to.x - self.x,2) + pow(to.y - self.y,2))
+        raise TypeError("引数にはPosが期待されます")
+
+
