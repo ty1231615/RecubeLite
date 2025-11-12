@@ -14,9 +14,13 @@ class SimpleTask:
     def CancelRemove(self):
         self.__delete = False
     def run(self):
-        if self.delete:
-            del self
-            return
+        ...
     def __del__(self):
         if self in SimpleTask._INSTANCE:
             SimpleTask._INSTANCE.remove(self)
+    @classmethod
+    def AllInstanceRun(cls):
+        for instance in cls._INSTANCE:
+            instance.run()
+            if instance.delete:
+                del instance

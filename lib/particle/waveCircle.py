@@ -1,23 +1,25 @@
+from lib import easing
+from lib.progress import Progress
+from lib.task import SimpleTask
+
 import pygame
 
-class WaveCircle:
-    def __init__(self,surface:pygame.Surface,center:tuple[int,int],maxRadius:int,color:tuple[int,int,int],width:int,speed:int) -> None:
+class WaveCircle(SimpleTask):
+    def __init__(self,surface:pygame.Surface,center:tuple[int,int], progress: Progress,maxRadius:int,color:tuple[int,int,int],width:int, radiusEasing=easing.easeOutQuart, widthEasing=easing.easeOutQuart) -> None:
+        super().__init__()
         self.__surface = surface
-        self.__center = center
+        self.center = center
+        self.__progress = progress
         self.__maxRadius = maxRadius
-        self.__color = color
-        self.__width = width
-        self.__speed = speed
-        self.__currentRadius = 0
+        self.color = color
+        self.width = width
+        self.__radiusEasing = radiusEasing
+        self.__widthEasing = widthEasing
+    def draw(self):
+        pygame.draw.circle(self.__surface,self.color,self.center,self.__radiusEasing(self.__progress.normalize()) * self.__maxRadius, int(self.__widthEasing(1 - self.__progress.normalize()) * self.width))
     def run(self):
-        if self.__currentRadius < self.__maxRadius:
-            pygame.draw.circle(self.__surface,self.__color,self.__center,self.__currentRadius,self.__width)
-            self.__currentRadius += self.__speed
-    @property
-    def currentRadius(self):
-        return self.__currentRadius
-    @currentRadius.setter
-    def currentRadius(self, value):
-        self.__currentRadius = value
-        if self.__currentRadius > self.__maxRadius:
-            self.__currentRadius = self.__maxRadius
+        if self.__progress.complete:
+            self.Remove()
+            return
+        self.draw()
+        self.__progress.next()

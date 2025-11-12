@@ -17,21 +17,21 @@ screen = pygame.display.set_mode((1000,1000))
 clock = pygame.time.Clock()
 runnable = True
 
-block_font = pygame.font.SysFont("arial",50)
-entity_font = pygame.font.SysFont("arial",55)
+block_font = pygame.font.SysFont("arial",20)
+entity_font = pygame.font.SysFont("arial",25)
 
 block_design = Design()
 block_design.add(Block.AIR, block_font.render("□",True,(0,0,0)))
 block_design.add(Block.WALL, block_font.render("■",True,(0,0,0)))
-block_design.add(Block.GOAL, block_font.render("■",True,(168, 251, 211)))
+block_design.add(Block.GOAL, block_font.render("■",True,(0, 70, 255)))
 
 player = Player(Pos(0,0))
 
 session = FirstDifficultySession(
     screen,
-    Stage(20,10,1),
-    40,
-    50,
+    Stage(55,35,1),
+    100,
+    500,
     [
         player
     ],
@@ -42,7 +42,7 @@ session = FirstDifficultySession(
         block_design,
         entity_font.render("▲",True,(250, 177, 47)),
         entity_font.render("▲",True,(221, 3, 3)),
-        10,
+        5,
         pygame.font.SysFont("arial",150),
         pygame.font.SysFont("arial",80)
     ),
@@ -51,7 +51,24 @@ session = FirstDifficultySession(
     AstarEnemy(Pos(0,0),50,False),
     AstarEnemy(Pos(0,0),35,False),
     AstarEnemy(Pos(0,0),30,False),
-    AstarEnemy(Pos(0,0),25,False)
+    AstarEnemy(Pos(0,0),25,False),
+    AstarEnemy(Pos(0,0),20,False),
+    AstarEnemy(Pos(0,0),15,False),
+    AstarEnemy(Pos(0,0),10,False),
+    #これ以降は一定の速度のエネミーを配置
+    AstarEnemy(Pos(0,0),50,False),
+    AstarEnemy(Pos(0,0),50,False),
+    AstarEnemy(Pos(0,0),50,False),
+    AstarEnemy(Pos(0,0),50,False),
+    AstarEnemy(Pos(0,0),50,False),
+    AstarEnemy(Pos(0,0),50,False),
+    AstarEnemy(Pos(0,0),50,False),
+    AstarEnemy(Pos(0,0),50,False),
+    AstarEnemy(Pos(0,0),50,False),
+    AstarEnemy(Pos(0,0),50,False),
+    AstarEnemy(Pos(0,0),50,False),
+    AstarEnemy(Pos(0,0),50,False),
+    AstarEnemy(Pos(0,0),50,False)
     ],
     Progress(0,5,0,1)
 )

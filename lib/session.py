@@ -4,6 +4,8 @@ from lib.computer import ComputeEnemy
 from lib.view import SessionDesignView
 from lib.position import Pos
 from lib.block import Block
+from lib.task import SimpleTask
+from lib import util
 
 import pygame
 import random
@@ -44,6 +46,14 @@ class Session:
         for player in self.__players:
             position = random.choice(positions)
             player.position.movePos(position)
+            particle_pos = util.safe_get_grid(self.__render_details,player.position.x,player.position.y)
+            if particle_pos:
+                particle_pos = Pos(particle_pos.x,particle_pos.y)
+                #プレイヤーの中心になるようにパーティクルの位置を調整
+                particle_pos.x = particle_pos.x + int(self.view.playerDesign.get_width() / 2)
+                particle_pos.y = particle_pos.y + int(self.view.playerDesign.get_height() / 2)
+                self.view.playerWaveParticle(self.__surface,particle_pos.toTuple(),30, (255, 128, 64))
+
             positions.remove(position)
         if len(self.__players) != 0: #プレイヤーがいる場合のみゴールを作成
             self.__goal_position = self.decide_arrive_goal_positions(random.choice(self.__players).position,100)
@@ -67,6 +77,7 @@ class Session:
         self.draw_stage() #マップの描画
         self.check_goal() #ゴール到達の確認
         self.check_game_over() #ゲームオーバーの確認
+        SimpleTask.AllInstanceRun() #シンプルタスクの実行
         return self.__surface
     def arrive_position(self,position:Pos,step:int=100,visited=[]) -> list[Pos]:
         if step <= 0:
