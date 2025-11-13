@@ -24,6 +24,7 @@ class Session:
         self.__surface = surface
         self.__render_details:list[list[Pos]] = self.__stage.makeStageDelta(Pos(0,0))
         self.__block_register = block_register
+        self.enemy_stayframe = 120
     def gameInit(self):
         self.__count_stage = 1
         self.__game_over = False
@@ -65,7 +66,7 @@ class Session:
             #ステージのレベルごとのコンピューターの計算速度を更新
             current_level = self.stage.level
             enemy.moveProgress.MAX_MODIFIER.add(Session.LEVEL_MODIFIER,-current_level)
-            enemy.stayProgress.current = 120
+            enemy.stayProgress.current = self.enemy_stayframe
     def tick(self) -> pygame.Surface:
         #この関数を毎フレーム呼び出す
         if self.__game_over:

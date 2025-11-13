@@ -34,7 +34,9 @@ class FirstDifficultySession(StepWithLevelSession):
     def CheckAddEnemy(self):
         step = self.GimicStep.current
         if step > 0 and step <= len(self.addEnemys):
-            self.addEnemys[step].active()
+            new_enemy = self.addEnemys[step]
+            new_enemy.active()
+            new_enemy.stayProgress.current = self.enemy_stayframe
     def OnGimicStep(self):
         self.CheckAddEnemy()
     def get_enemys(self):
