@@ -22,7 +22,7 @@ class SessionDesignView:
         self.__resultTextFont = resultTextFont
     def playerWaveParticle(self,surface:pygame.Surface, center: tuple[int,int], maxTime,color:tuple[int,int,int]):
         delta = (self.playerDesign.get_width() + self.playerDesign.get_height()) / 2
-        return WaveCircle(surface,center,Progress(0, maxTime, 0, 1), delta * 15, color, delta * 3)
+        return WaveCircle(surface,center,Progress(0, maxTime, 0, 1), delta * 15, color, delta * 5)
     @property
     def blockDesigns(self):
         return self.__blockDesign

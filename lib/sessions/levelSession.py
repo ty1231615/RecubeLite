@@ -4,6 +4,7 @@ from lib.player import Player
 from lib.session import Session
 from lib.stage import Stage
 from lib.view import SessionDesignView
+from lib.block import BlockRegister
 from lib.progress import Progress
 
 import pygame
@@ -13,8 +14,8 @@ class StepWithLevelSession(Session):
     """
     進んだレベルに応じて変化を加えるセッション
     """
-    def __init__(self, surface: pygame.Surface, stage: Stage, stageLevel: int, maxStageLevel: int, players: list[Player], enemys: list[ComputeEnemy], view: SessionDesignView, levelStepProgress: Progress, GimicStep: Progress) -> None:
-        super().__init__(surface, stage, stageLevel, maxStageLevel, players, enemys, view)
+    def __init__(self, surface: pygame.Surface, stage: Stage, stageLevel: int, maxStageLevel: int, players: list[Player], enemys: list[ComputeEnemy], view: SessionDesignView, block_register:BlockRegister, levelStepProgress: Progress, GimicStep: Progress) -> None:
+        super().__init__(surface, stage, stageLevel, maxStageLevel, players, enemys, view, block_register)
         self.__levelStepProgress = levelStepProgress
         self.__GimicStep = GimicStep
     @property

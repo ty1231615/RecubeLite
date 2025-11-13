@@ -1,4 +1,4 @@
-from lib.block import Block
+from lib.block import BlockData,BlockRegister
 from lib.position import Pos
 
 import random
@@ -26,11 +26,11 @@ class Stage:
     @property
     def height(self):
         return self.__height_size
-    def getAirSpace(self):
+    def getAirSpace(self,block_register:BlockRegister):
         positions = []
         for y in range(self.height):
             for x in range(self.width):
-                if self.stage[y][x] == Block.AIR:
+                if block_register.is_throughable(self.stage[y][x]):
                     positions.append(Pos(x,y))
         return positions
     def resetStage(self):
@@ -43,19 +43,19 @@ class Stage:
         for i in range(level):
             x = random.randint(0,self.width-1)
             y = random.randint(0,self.height-1)
-            self.stage[y][x] = Block.WALL
+            self.stage[y][x] = BlockData.WALL
     def randomPosition(self):
         x = random.randint(0,self.width-1)
         y = random.randint(0,self.height-1)
         return Pos(x,y)
     def createGoal(self,pos:Pos):
-        self.stage[pos.y][pos.x] = Block.GOAL
+        self.stage[pos.y][pos.x] = BlockData.GOAL
     def makeStageDelta(self,delta):
         return [[delta for x in range(self.width)] for y in range(self.height)]
 
     @classmethod
     def makeStage(cls,width,height):
-        return [[Block.AIR for i in range(width)] for i in range(height)]
+        return [[BlockData.AIR for i in range(width)] for i in range(height)]
     @classmethod
     def fill_beside(cls,stage,index,block):
         for i in range(len(stage[index])):
@@ -66,7 +66,7 @@ class Stage:
             stage[y][index] = block
     @classmethod
     def makeAroundWall(cls,stage):
-        Stage.fill_beside(stage,0,Block.WALL)
-        Stage.fill_beside(stage,len(stage)-1,Block.WALL)
-        Stage.fill_vertical(stage,0,Block.WALL)
-        Stage.fill_vertical(stage,len(stage[0])-1,Block.WALL)
+        Stage.fill_beside(stage,0,BlockData.WALL)
+        Stage.fill_beside(stage,len(stage)-1,BlockData.WALL)
+        Stage.fill_vertical(stage,0,BlockData.WALL)
+        Stage.fill_vertical(stage,len(stage[0])-1,BlockData.WALL)

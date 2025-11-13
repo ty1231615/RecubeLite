@@ -3,7 +3,7 @@ from lib.player import Player
 from lib.computer import ComputeEnemy
 from lib.view import SessionDesignView
 from lib.position import Pos
-from lib.block import Block
+from lib.block import BlockData,BlockRegister
 from lib.task import SimpleTask
 from lib import util
 
@@ -13,7 +13,7 @@ import copy
 
 class Session:
     LEVEL_MODIFIER = "LevelModifier"
-    def __init__(self,surface:pygame.Surface,stage:Stage, stageLevel:int, maxStageLevel:int,players:list[Player],enemys:list[ComputeEnemy],view:SessionDesignView) -> None:
+    def __init__(self,surface:pygame.Surface,stage:Stage, stageLevel:int, maxStageLevel:int,players:list[Player],enemys:list[ComputeEnemy],view:SessionDesignView,block_register:BlockRegister) -> None:
         self.__stage = stage
         self.__defaut_stage_level = stageLevel
         self.__maxStageLevel = maxStageLevel
@@ -23,6 +23,7 @@ class Session:
         self.__view = view
         self.__surface = surface
         self.__render_details:list[list[Pos]] = self.__stage.makeStageDelta(Pos(0,0))
+        self.__block_register = block_register
     def gameInit(self):
         self.__count_stage = 1
         self.__game_over = False
@@ -42,7 +43,7 @@ class Session:
     def loadLevel(self):
         self.createStage()
         self.draw_stage()
-        positions = self.stage.getAirSpace()
+        positions = self.stage.getAirSpace(self.__block_register)
         for player in self.__players:
             position = random.choice(positions)
             player.position.movePos(position)
@@ -53,7 +54,6 @@ class Session:
                 particle_pos.x = particle_pos.x + int(self.view.playerDesign.get_width() / 2)
                 particle_pos.y = particle_pos.y + int(self.view.playerDesign.get_height() / 2)
                 self.view.playerWaveParticle(self.__surface,particle_pos.toTuple(),30, (255, 128, 64))
-
             positions.remove(position)
         if len(self.__players) != 0: #プレイヤーがいる場合のみゴールを作成
             self.__goal_position = self.decide_arrive_goal_positions(random.choice(self.__players).position,100)
@@ -103,7 +103,7 @@ class Session:
     def can_move(self,position:Pos) -> bool:
         if 0 <= position.x < self.stage.width and 0 <= position.y < self.stage.height:
             block = self.stage.stage[position.y][position.x]
-            if block != Block.WALL: #壁以外は移動可能
+            if self.block_register.is_throughable(block): #移動可能なブロックであるかどうか
                 return True
         return False
     def goal(self):
@@ -173,7 +173,7 @@ class Session:
     def get_stage_with_obstacles(self):
         grid = copy.deepcopy(self.stage.stage)
         for entity in self.get_enemys():
-            grid[entity.position.y][entity.position.x] = Block.WALL
+            grid[entity.position.y][entity.position.x] = BlockData.WALL
         return grid
     @property
     def stage(self):
@@ -187,3 +187,6 @@ class Session:
     @property
     def view(self):
         return self.__view
+    @property
+    def block_register(self):
+        return self.__block_register

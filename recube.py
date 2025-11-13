@@ -4,7 +4,7 @@ from lib.session import Session
 from lib.sessions.package.difficult import FirstDifficultySession
 from lib.progress import Progress
 from lib.stage import Stage
-from lib.block import Block
+from lib.block import BlockData,BlockRegister
 from lib.position import Pos
 from lib.player import Player
 from lib.view import SessionDesignView, Design
@@ -17,19 +17,21 @@ screen = pygame.display.set_mode((1000,1000))
 clock = pygame.time.Clock()
 runnable = True
 
-block_font = pygame.font.SysFont("arial",20)
-entity_font = pygame.font.SysFont("arial",25)
+block_font = pygame.font.SysFont("arial",40)
+entity_font = pygame.font.SysFont("arial",45)
 
 block_design = Design()
-block_design.add(Block.AIR, block_font.render("□",True,(0,0,0)))
-block_design.add(Block.WALL, block_font.render("■",True,(0,0,0)))
-block_design.add(Block.GOAL, block_font.render("■",True,(0, 70, 255)))
+block_design.add(BlockData.AIR, block_font.render("□",True,(0,0,0)))
+block_design.add(BlockData.WALL, block_font.render("■",True,(0,0,0)))
+block_design.add(BlockData.GOAL, block_font.render("■",True,(0, 70, 255)))
 
 player = Player(Pos(0,0))
 
+block_register = BlockRegister.DefaultRegister()
+
 session = FirstDifficultySession(
     screen,
-    Stage(55,35,1),
+    Stage(32,19,1),
     100,
     500,
     [
@@ -46,6 +48,7 @@ session = FirstDifficultySession(
         pygame.font.SysFont("arial",150),
         pygame.font.SysFont("arial",80)
     ),
+    block_register,
     [
     AstarEnemy(Pos(0,0),55,False),
     AstarEnemy(Pos(0,0),50,False),
@@ -92,10 +95,10 @@ player_controller = [
 session.start()
 
 while runnable:
+    clock.tick(60)
     screen.fill((255,255,255))
     screen.blit(session.tick(),(0,0))
     pygame.display.update()
-    clock.tick(60)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             runnable = False

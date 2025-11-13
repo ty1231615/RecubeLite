@@ -3,12 +3,12 @@ from lib.entity import Entity
 from lib.enemy import Enemy
 from lib.progress import Progress
 from lib.position import Pos
-from lib.block import Block
+from lib.block import BlockData,BlockRegister
 from lib import util
 
 import heapq
 
-def astar(grid, start, goal):
+def astar(grid, start, goal,block_register:BlockRegister):
     """
     2次元グリッド上のA*アルゴリズム
     
@@ -51,7 +51,7 @@ def astar(grid, start, goal):
             # 範囲チェック
             if 0 <= nx < len(grid[0]) and 0 <= ny < len(grid):
                 # 通行可能かつ未訪問
-                if grid[ny][nx] == Block.AIR and (nx, ny) not in visited:
+                if block_register.is_throughable(grid[ny][nx]) and (nx, ny) not in visited:
                     new_g = g + 1
                     new_f = new_g + heuristic((nx, ny), goal)
                     heapq.heappush(open_list, (new_f, new_g, (nx, ny), path + [(nx, ny)]))
@@ -97,8 +97,8 @@ class AstarEnemy(ComputeEnemy):
             nearPlayer = session.getNearPlayer(self.position)
             if nearPlayer:
                 grid = session.get_stage_with_obstacles()
-                util.safe_change_grid(grid,self.position.x, self.position.y, Block.AIR)
-                root = astar(grid,self.position.toTuple(),nearPlayer.position.toTuple())
+                util.safe_change_grid(grid,self.position.x, self.position.y, BlockData.AIR)
+                root = astar(grid,self.position.toTuple(),nearPlayer.position.toTuple(),session.block_register)
                 if 1 < len(root):
                     self.position.move(*root[1])
         self.moveProgress.next()
