@@ -171,11 +171,11 @@ class Session:
     def draw_players(self):
         for player in self.get_players():
             pos = self.__render_details[player.position.y][player.position.x]
-            self.__surface.blit(self.__view.playerDesign, (pos.x,pos.y))
+            self.__surface.blit(self.__view.playerDesign, (pos.x - self.view.blockPadding/2,pos.y))
     def draw_enemys(self):
         for enemy in self.get_enemys():
             pos = self.__render_details[enemy.position.y][enemy.position.x]
-            self.__surface.blit(self.__view.enemyDesign, (pos.x, pos.y))
+            self.__surface.blit(self.__view.enemyDesign, (pos.x - self.view.blockPadding/2, pos.y))
     def compute_enemys(self):
         for enemy in self.get_enemys():
             enemy.moveNextStep(self)
