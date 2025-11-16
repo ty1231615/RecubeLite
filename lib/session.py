@@ -51,20 +51,20 @@ class Session:
         self.gameInit()
         self.loadLevel()
         self.all_player_wave_particle()
-    def all_player_wave_particle(self):
+    def all_player_wave_particle(self,color=(255, 128, 64)):
         for player in self.get_players():
-            self.player_wave_particle(player)
-    def player_wave_particle(self,player:Player):
+            self.player_wave_particle(player,color)
+    def player_wave_particle(self,player:Player,color):
         particle_pos = util.safe_get_grid(self.__render_details,player.position.x,player.position.y)
         if particle_pos:
             particle_pos = Pos(particle_pos.x,particle_pos.y)
             #プレイヤーの中心になるようにパーティクルの位置を調整
             particle_pos.x = particle_pos.x + int(self.view.playerDesign.get_width() / 2)
             particle_pos.y = particle_pos.y + int(self.view.playerDesign.get_height() / 2)
-            self.view.playerWaveParticle(self.__surface,particle_pos.toTuple(),30, (255, 128, 64))
+            self.view.playerWaveParticle(self.__surface,particle_pos.toTuple(),30, color)
     def stay_shake(self,frame):
         self.stay_clock.current = frame
-        ShakingCamera(Progress(0,frame,0,1),20,40)
+        ShakingCamera(Progress(0,frame,0,1),-20,20)
     def loadLevel(self):
         self.createStage()
         self.draw_stage()
@@ -141,6 +141,7 @@ class Session:
                         self.__game_over = True
                         return
                     self.loadLevel()
+                    self.all_player_wave_particle((191, 9, 47))
                     self.stay_shake(config.base_frame_rate / 5)
                     return
     def check_goal(self):
