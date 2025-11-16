@@ -6,15 +6,15 @@ from lib.progress import Progress
 from lib.sessions.levelSession import StepWithLevelSession
 from lib.stage import Stage
 from lib.view import SessionDesignView
-from lib.enemy import Enemy
 from lib.block import BlockRegister
+from lib.health import Health
 
 class FirstDifficultySession(StepWithLevelSession):
     """
     進んだステージに応じて新たな敵が出現する
     """
-    def __init__(self, surface: Surface, stage: Stage, stageLevel: int, maxStageLevel: int, players: list[Player], enemys: list[ComputeEnemy], view: SessionDesignView, block_register:BlockRegister, addEnemys:list[ComputeEnemy], levelStepProgress: Progress) -> None:
-        super().__init__(surface, stage, stageLevel, maxStageLevel, players, enemys, view, block_register, levelStepProgress, Progress(0, len(addEnemys)-1, 0, 1))
+    def __init__(self, surface: Surface, stage: Stage, stageLevel: int, maxStageLevel: int, health: Health, players: list[Player], enemys: list[ComputeEnemy], view: SessionDesignView, block_register:BlockRegister, addEnemys:list[ComputeEnemy], levelStepProgress: Progress) -> None:
+        super().__init__(surface, stage, stageLevel, maxStageLevel, health, players, enemys, view, block_register, levelStepProgress, Progress(0, len(addEnemys)-1, 0, 1))
         self.__addEemys = addEnemys
         self.CheckAddEnemy()
     @property

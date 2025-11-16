@@ -1,15 +1,17 @@
 import pygame
 
-from lib.session import Session
+import lib.config as config
 from lib.sessions.package.difficult import FirstDifficultySession
 from lib.progress import Progress
 from lib.stage import Stage
+from lib.health import Health
 from lib.block import BlockData,BlockRegister
 from lib.position import Pos
 from lib.player import Player
 from lib.view import SessionDesignView, Design
 from lib.computer import AstarEnemy
 from lib.controller import PlayerControleBinder
+from lib.particle.camera import CURRENT_CAMERA
 
 pygame.init()
 
@@ -21,9 +23,9 @@ block_font = pygame.font.SysFont("arial",40)
 entity_font = pygame.font.SysFont("arial",45)
 
 block_design = Design()
-block_design.add(BlockData.AIR, block_font.render("□",True,(0,0,0)))
-block_design.add(BlockData.WALL, block_font.render("■",True,(0,0,0)))
-block_design.add(BlockData.GOAL, block_font.render("■",True,(0, 70, 255)))
+block_design.register(BlockData.AIR, block_font.render("□",True,(0,0,0)))
+block_design.register(BlockData.WALL, block_font.render("■",True,(0,0,0)))
+block_design.register(BlockData.GOAL, block_font.render("■",True,(0, 70, 255)))
 
 player = Player(Pos(0,0))
 
@@ -34,11 +36,12 @@ session = FirstDifficultySession(
     Stage(32,19,1),
     100,
     500,
+    Health(5,5),
     [
         player
     ],
     [
-        AstarEnemy(Pos(0,0),60,True),
+        AstarEnemy(Pos(0,0),60,1,True),
     ],
     SessionDesignView(
         block_design,
@@ -50,28 +53,28 @@ session = FirstDifficultySession(
     ),
     block_register,
     [
-    AstarEnemy(Pos(0,0),55,False),
-    AstarEnemy(Pos(0,0),50,False),
-    AstarEnemy(Pos(0,0),35,False),
-    AstarEnemy(Pos(0,0),30,False),
-    AstarEnemy(Pos(0,0),25,False),
-    AstarEnemy(Pos(0,0),20,False),
-    AstarEnemy(Pos(0,0),15,False),
-    AstarEnemy(Pos(0,0),10,False),
+    AstarEnemy(Pos(0,0),55,1,False),
+    AstarEnemy(Pos(0,0),50,1,False),
+    AstarEnemy(Pos(0,0),35,1,False),
+    AstarEnemy(Pos(0,0),30,1,False),
+    AstarEnemy(Pos(0,0),25,1,False),
+    AstarEnemy(Pos(0,0),20,1,False),
+    AstarEnemy(Pos(0,0),15,1,False),
+    AstarEnemy(Pos(0,0),10,1,False),
     #これ以降は一定の速度のエネミーを配置
-    AstarEnemy(Pos(0,0),50,False),
-    AstarEnemy(Pos(0,0),50,False),
-    AstarEnemy(Pos(0,0),50,False),
-    AstarEnemy(Pos(0,0),50,False),
-    AstarEnemy(Pos(0,0),50,False),
-    AstarEnemy(Pos(0,0),50,False),
-    AstarEnemy(Pos(0,0),50,False),
-    AstarEnemy(Pos(0,0),50,False),
-    AstarEnemy(Pos(0,0),50,False),
-    AstarEnemy(Pos(0,0),50,False),
-    AstarEnemy(Pos(0,0),50,False),
-    AstarEnemy(Pos(0,0),50,False),
-    AstarEnemy(Pos(0,0),50,False)
+    AstarEnemy(Pos(0,0),50,1,False),
+    AstarEnemy(Pos(0,0),50,1,False),
+    AstarEnemy(Pos(0,0),50,1,False),
+    AstarEnemy(Pos(0,0),50,1,False),
+    AstarEnemy(Pos(0,0),50,1,False),
+    AstarEnemy(Pos(0,0),50,1,False),
+    AstarEnemy(Pos(0,0),50,1,False),
+    AstarEnemy(Pos(0,0),50,1,False),
+    AstarEnemy(Pos(0,0),50,1,False),
+    AstarEnemy(Pos(0,0),50,1,False),
+    AstarEnemy(Pos(0,0),50,1,False),
+    AstarEnemy(Pos(0,0),50,1,False),
+    AstarEnemy(Pos(0,0),50,1,False)
     ],
     Progress(0,5,0,1)
 )
@@ -95,14 +98,14 @@ player_controller = [
 session.start()
 
 while runnable:
-    clock.tick(60)
+    clock.tick(config.base_frame_rate)
     screen.fill((255,255,255))
-    screen.blit(session.tick(),(0,0))
+    screen.blit(session.tick(),CURRENT_CAMERA.to_tuple())
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             runnable = False
         if event.type == pygame.KEYDOWN:
-                for handler in player_controller:
-                    if handler.key == event.key:
-                        handler.command()
+            for handler in player_controller:
+                if handler.key == event.key:
+                    handler.command()

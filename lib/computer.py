@@ -60,8 +60,8 @@ def astar(grid, start, goal,block_register:BlockRegister):
     return []
 
 class ComputeEnemy(Enemy):
-    def __init__(self, position: Pos,computeSpeed:int, valid:bool) -> None:
-        super().__init__(position,valid)
+    def __init__(self, position: Pos,computeSpeed:int, attackDamage:int, valid:bool) -> None:
+        super().__init__(position,attackDamage,valid)
         self.__speed = computeSpeed
         self.__moveProgress = Progress(0,self.__speed,0,1)
         self.__stayProgress = Progress(0,200,0,-1)
@@ -86,8 +86,8 @@ class ComputeEnemy(Enemy):
         return self.position
 
 class AstarEnemy(ComputeEnemy):
-    def __init__(self,position:Pos, computeSpeed, valid: bool) -> None:
-        super().__init__(position,computeSpeed,valid)
+    def __init__(self,position:Pos, computeSpeed, attackDamage:int, valid: bool) -> None:
+        super().__init__(position,computeSpeed,attackDamage,valid)
     def nextStep(self, session):
         if not self.stayProgress.startline:
             self.stayProgress.next()

@@ -15,6 +15,8 @@ class SimpleTask:
         self.__delete = False
     def run(self):
         ...
+    def on_remove(self):
+        ...
     def __del__(self):
         if self in SimpleTask._INSTANCE:
             SimpleTask._INSTANCE.remove(self)
@@ -23,4 +25,5 @@ class SimpleTask:
         for instance in cls._INSTANCE:
             instance.run()
             if instance.delete:
+                instance.on_remove()
                 del instance

@@ -5,6 +5,10 @@ from lib.view import SessionDesignView
 from lib.position import Pos
 from lib.block import BlockData,BlockRegister
 from lib.task import SimpleTask
+from lib.progress import Progress
+from lib.health import Health
+from lib import config
+from lib.particle.shaking import ShakingCamera
 from lib import util
 
 import pygame
@@ -13,10 +17,12 @@ import copy
 
 class Session:
     LEVEL_MODIFIER = "LevelModifier"
-    def __init__(self,surface:pygame.Surface,stage:Stage, stageLevel:int, maxStageLevel:int,players:list[Player],enemys:list[ComputeEnemy],view:SessionDesignView,block_register:BlockRegister) -> None:
+    def __init__(self,surface:pygame.Surface,stage:Stage, stageLevel:int, maxStageLevel:int, health:Health, players:list[Player],enemys:list[ComputeEnemy],view:SessionDesignView,block_register:BlockRegister) -> None:
         self.__stage = stage
         self.__defaut_stage_level = stageLevel
         self.__maxStageLevel = maxStageLevel
+        self.__health = health
+        self.__default_health_data = (health.hp,health.max_hp)
         self.__players = players
         self.__goal_position = Pos(0,0)
         self.__enemys = enemys
@@ -25,12 +31,15 @@ class Session:
         self.__render_details:list[list[Pos]] = self.__stage.makeStageDelta(Pos(0,0))
         self.__block_register = block_register
         self.enemy_stayframe = 120
+        self.__stay_clock = Progress(0, 1000, 0, -1) #プログレスが1以上ならtickで何も行わない
     def gameInit(self):
         self.__count_stage = 1
+        self.__health = Health(self.__default_health_data[0],self.__default_health_data[1])
         self.__game_over = False
         self.__stage.level = self.__defaut_stage_level
     def start(self):
         self.loadLevel()
+        self.all_player_wave_particle()
     def createStage(self):
         self.stage.resetStage()
         self.stage.ScatterWall(self.__maxStageLevel)
@@ -41,6 +50,21 @@ class Session:
     def restart(self):
         self.gameInit()
         self.loadLevel()
+        self.all_player_wave_particle()
+    def all_player_wave_particle(self):
+        for player in self.get_players():
+            self.player_wave_particle(player)
+    def player_wave_particle(self,player:Player):
+        particle_pos = util.safe_get_grid(self.__render_details,player.position.x,player.position.y)
+        if particle_pos:
+            particle_pos = Pos(particle_pos.x,particle_pos.y)
+            #プレイヤーの中心になるようにパーティクルの位置を調整
+            particle_pos.x = particle_pos.x + int(self.view.playerDesign.get_width() / 2)
+            particle_pos.y = particle_pos.y + int(self.view.playerDesign.get_height() / 2)
+            self.view.playerWaveParticle(self.__surface,particle_pos.toTuple(),30, (255, 128, 64))
+    def stay_shake(self,frame):
+        self.stay_clock.current = frame
+        ShakingCamera(Progress(0,frame,0,1),20,40)
     def loadLevel(self):
         self.createStage()
         self.draw_stage()
@@ -48,13 +72,6 @@ class Session:
         for player in self.__players:
             position = random.choice(positions)
             player.position.movePos(position)
-            particle_pos = util.safe_get_grid(self.__render_details,player.position.x,player.position.y)
-            if particle_pos:
-                particle_pos = Pos(particle_pos.x,particle_pos.y)
-                #プレイヤーの中心になるようにパーティクルの位置を調整
-                particle_pos.x = particle_pos.x + int(self.view.playerDesign.get_width() / 2)
-                particle_pos.y = particle_pos.y + int(self.view.playerDesign.get_height() / 2)
-                self.view.playerWaveParticle(self.__surface,particle_pos.toTuple(),30, (255, 128, 64))
             positions.remove(position)
         if len(self.__players) != 0: #プレイヤーがいる場合のみゴールを作成
             self.__goal_position = self.decide_arrive_goal_positions(random.choice(self.__players).position,100)
@@ -77,7 +94,7 @@ class Session:
         self.draw_players() #プレイヤーの描画
         self.draw_stage() #マップの描画
         self.check_goal() #ゴール到達の確認
-        self.check_game_over() #ゲームオーバーの確認
+        self.check_damage() #ダメージの確認
         SimpleTask.AllInstanceRun() #シンプルタスクの実行
         return self.__surface
     def arrive_position(self,position:Pos,step:int=100,visited=[]) -> list[Pos]:
@@ -102,6 +119,8 @@ class Session:
             return fromPosition
         return random.choice(arrive_positions)
     def can_move(self,position:Pos) -> bool:
+        if not self.stay_clock.startline:
+            return False
         if 0 <= position.x < self.stage.width and 0 <= position.y < self.stage.height:
             block = self.stage.stage[position.y][position.x]
             if self.block_register.is_throughable(block): #移動可能なブロックであるかどうか
@@ -111,14 +130,21 @@ class Session:
         self.__count_stage += 1
         self.stage.level += 1
         self.loadLevel()
-    def check_game_over(self):
-        for player in self.__players:
+        self.all_player_wave_particle()
+    def check_damage(self):
+        for player in self.get_players():
             for enemy in self.get_enemys():
                 if player.position.equals(enemy.position):
-                    self.__game_over = True
+                    self.health.damage(enemy.damage)
+                    print(self.health.get_hit_point())
+                    if self.health.is_dead():
+                        self.__game_over = True
+                        return
+                    self.loadLevel()
+                    self.stay_shake(config.base_frame_rate / 5)
                     return
     def check_goal(self):
-        for player in self.__players:
+        for player in self.get_players():
             if self.__goal_position.equals(player.position):
                 self.goal()
                 return
@@ -142,7 +168,7 @@ class Session:
                 rect = self.__surface.blit(blockSurface,((x+1) * self.__view.blockPadding + blockSurface.get_width() * x,1 + y * self.__view.blockPadding + blockSurface.get_height() * (y+1)))
                 self.__render_details[y][x] = Pos(rect.x,rect.y)
     def draw_players(self):
-        for player in self.__players:
+        for player in self.get_players():
             pos = self.__render_details[player.position.y][player.position.x]
             self.__surface.blit(self.__view.playerDesign, (pos.x,pos.y))
     def draw_enemys(self):
@@ -153,9 +179,12 @@ class Session:
         for enemy in self.get_enemys():
             enemy.moveNextStep(self)
     def entity_itereter(self):
-        for player in self.__players:
+        for player in self.get_players():
             yield player
         yield from self.get_enemys()
+    def get_players(self):
+        for player in self.__players:
+            yield player
     def get_enemys(self):
         for enemy in self.__enemys:
             if enemy.valid:
@@ -180,6 +209,9 @@ class Session:
     def stage(self):
         return self.__stage
     @property
+    def health(self):
+        return self.__health
+    @property
     def players(self):
         return self.__players
     @property
@@ -191,3 +223,6 @@ class Session:
     @property
     def block_register(self):
         return self.__block_register
+    @property
+    def stay_clock(self):
+        return self.__stay_clock

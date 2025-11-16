@@ -1,14 +1,18 @@
 from lib.particle.waveCircle import WaveCircle
 from lib.progress import Progress
 from lib import easing
+from lib.register import NamespaceRegister
 
 import pygame
 
-class Design:
+class Design(NamespaceRegister):
     def __init__(self) -> None:
         self.__designs = {}
-    def add(self,key,design:pygame.Surface):
-        self.__designs.update({key:design})
+    def register(self,key,design:pygame.Surface):
+        if isinstance(design,pygame.Surface):
+            self.__designs.update({key:design})
+        else:
+            raise TypeError(f"{design} は不適切なオブジェクトです")
     def get(self,key) -> pygame.Surface:
         return self.__designs[key]
 

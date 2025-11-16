@@ -10,3 +10,13 @@ def safe_get_grid(grid, x ,y, default=None):
     if 0 <= y < len(grid) and 0 <= x < len(grid[y]):
         return grid[y][x]
     return default
+
+def maximum(x,y):
+    if x > y:
+        return y
+    return x
+
+def minimum(x,y):
+    if x <= y:
+        return y
+    return x
