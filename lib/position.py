@@ -40,15 +40,21 @@ class Pos:
         if isinstance(pos,Pos):
             self.x = pos.x
             self.y = pos.y
+    def plus(self,x,y):
+        return Pos(self.x + x, self.y + y)
     def equals(self,pos):
         if isinstance(pos,Pos):
             return pos.x == self.x and pos.y == self.y
         return False
     def toTuple(self):
         return (self.x,self.y)
-    def distanceTo(self, to):
+    def distanceTo(self, to) -> float:
         if isinstance(to, Pos):
             return math.sqrt(pow(to.x - self.x,2) + pow(to.y - self.y,2))
         raise TypeError("引数にはPosが期待されます")
-
-
+    def subtract(self,pos):
+        if isinstance(pos,Pos):
+            return Pos(self.x - pos.x, self.y - pos.y)
+        raise TypeError("引数にはPosが期待されます")
+    def multiple(self,x,y):
+        return Pos(self.x * x, self.y * y)

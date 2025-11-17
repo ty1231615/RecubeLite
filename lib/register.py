@@ -14,3 +14,6 @@ class NamespaceRegister:
         if not value:
             raise NotRegistedError(f"キー値: '{key}' は参照できませんでした")
         return value
+    def iter(self):
+        for registed in self.__registed:
+            yield (registed, self.__registed[registed])

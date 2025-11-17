@@ -24,3 +24,6 @@ def minimum(x,y):
 
 def frame_to_second(second:int) -> int:
     return config.base_frame_rate * second
+
+def get_difference_base_frame(frame):
+    return config.base_frame_rate / frame

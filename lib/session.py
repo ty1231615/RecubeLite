@@ -8,6 +8,8 @@ from lib.task import SimpleTask
 from lib.progress import Progress
 from lib.health import Health
 from lib import config
+from lib.task import TaskLineLoader
+from lib.particle.notice.popup_notice import UpperNotice
 from lib.particle.shaking import ShakingCamera
 from lib import util
 
@@ -30,6 +32,7 @@ class Session:
         self.__surface = surface
         self.__render_details:list[list[Pos]] = self.__stage.makeStageDelta(Pos(0,0))
         self.__block_register = block_register
+        self.__task_line_handler = TaskLineLoader()
         self.enemy_stayframe = 120
         self.__stay_clock = Progress(0, 1000, 0, -1) #プログレスが1以上ならtickで何も行わない
     def gameInit(self):
@@ -62,6 +65,28 @@ class Session:
             particle_pos.x = particle_pos.x + int(self.view.playerDesign.get_width() / 2)
             particle_pos.y = particle_pos.y + int(self.view.playerDesign.get_height() / 2)
             self.view.playerWaveParticle(self.__surface,particle_pos.toTuple(),30, color)
+    def notice_now_stage(self):
+        text = self.view.upperNoticeFont.render(f"< {self.__count_stage} >",True,(6, 7, 113))
+        self.task_line_handler.register(
+            UpperNotice.NAMESPACE,
+            UpperNotice(
+                self.__surface,
+                text,
+                Pos(self.__surface.get_width() / 2 - text.get_width() / 2, -200),
+                300
+            ).CreateTaskLine()
+        )
+    def notice_health(self):
+        text = self.view.upperNoticeFont.render("▲" * util.minimum(self.health.get_hit_point()+1,0),True,(255, 108, 12))
+        self.task_line_handler.register(
+            UpperNotice.NAMESPACE,
+            UpperNotice(
+                self.__surface,
+                text,
+                Pos(self.__surface.get_width() / 2 - text.get_width() / 2, -200),
+                300
+            ).CreateTaskLine()
+        )
     def stay_shake(self,frame):
         self.stay_clock.current = frame
         ShakingCamera(Progress(0,frame,0,1),-20,20)
@@ -69,7 +94,7 @@ class Session:
         self.createStage()
         self.draw_stage()
         positions = self.stage.getAirSpace(self.__block_register)
-        for player in self.__players:
+        for player in self.get_players():
             position = random.choice(positions)
             player.position.movePos(position)
             positions.remove(position)
@@ -88,6 +113,7 @@ class Session:
         #この関数を毎フレーム呼び出す
         if self.__game_over:
             self.draw_game_over()
+            SimpleTask.AllInstanceRun() #シンプルタスクの実行
             return self.__surface
         self.compute_enemys() #敵の移動計算
         self.draw_enemys() #敵の描画
@@ -95,6 +121,7 @@ class Session:
         self.draw_stage() #マップの描画
         self.check_goal() #ゴール到達の確認
         self.check_damage() #ダメージの確認
+        self.task_line_handler.tick() #タスクハンドラーの実行
         SimpleTask.AllInstanceRun() #シンプルタスクの実行
         return self.__surface
     def arrive_position(self,position:Pos,step:int=100,visited=[]) -> list[Pos]:
@@ -131,18 +158,19 @@ class Session:
         self.stage.level += 1
         self.loadLevel()
         self.all_player_wave_particle()
+        self.notice_now_stage()
     def check_damage(self):
         for player in self.get_players():
             for enemy in self.get_enemys():
                 if player.position.equals(enemy.position):
                     self.health.damage(enemy.damage)
-                    print(self.health.get_hit_point())
+                    self.stay_shake(config.base_frame_rate / 5)
                     if self.health.is_dead():
                         self.__game_over = True
                         return
                     self.loadLevel()
+                    self.notice_health()
                     self.all_player_wave_particle((191, 9, 47))
-                    self.stay_shake(config.base_frame_rate / 5)
                     return
     def check_goal(self):
         for player in self.get_players():
@@ -180,8 +208,7 @@ class Session:
         for enemy in self.get_enemys():
             enemy.moveNextStep(self)
     def entity_itereter(self):
-        for player in self.get_players():
-            yield player
+        yield from self.get_players()
         yield from self.get_enemys()
     def get_players(self):
         for player in self.__players:
@@ -227,3 +254,6 @@ class Session:
     @property
     def stay_clock(self):
         return self.__stay_clock
+    @property
+    def task_line_handler(self):
+        return self.__task_line_handler

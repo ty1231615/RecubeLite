@@ -17,31 +17,35 @@ class Design(NamespaceRegister):
         return self.__designs[key]
 
 class SessionDesignView:
-    def __init__(self,blockDesign:Design,player: pygame.Surface, enemy: pygame.Surface,blockPadding:int,gameOverFont:pygame.font.Font, resultTextFont:pygame.font.Font) -> None:
-        self.__blockDesign = blockDesign
-        self.__playerDesign = player
-        self.__enemyDesign = enemy
-        self.__blockPadding = blockPadding
-        self.__gameOverFont = gameOverFont
-        self.__resultTextFont = resultTextFont
+    def __init__(self, blockDesign: Design, player: pygame.Surface, enemy: pygame.Surface, blockPadding: int, gameOverFont: pygame.font.Font, resultTextFont: pygame.font.Font, upperNoticeFont: pygame.font.Font) -> None:
+        self.__block_design = blockDesign
+        self.__player_design = player
+        self.__enemy_design = enemy
+        self.__block_padding = blockPadding
+        self.__game_over_font = gameOverFont
+        self.__result_text_font = resultTextFont
+        self.__upper_notice_font = upperNoticeFont
     def playerWaveParticle(self,surface:pygame.Surface, center: tuple[int,int], maxTime,color:tuple[int,int,int]):
         delta = (self.playerDesign.get_width() + self.playerDesign.get_height()) / 2
         return WaveCircle(surface,center,Progress(0, maxTime, 0, 1), delta * 15, color, delta * 5)
     @property
     def blockDesigns(self):
-        return self.__blockDesign
+        return self.__block_design
     @property
     def playerDesign(self):
-        return self.__playerDesign
+        return self.__player_design
     @property
     def enemyDesign(self):
-        return self.__enemyDesign
+        return self.__enemy_design
     @property
     def blockPadding(self):
-        return self.__blockPadding
+        return self.__block_padding
     @property
     def gameOverFont(self):
-        return self.__gameOverFont
+        return self.__game_over_font
     @property
     def resultTextFont(self):
-        return self.__resultTextFont
+        return self.__result_text_font
+    @property
+    def upperNoticeFont(self):
+        return self.__upper_notice_font

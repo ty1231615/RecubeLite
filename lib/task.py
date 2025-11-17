@@ -1,6 +1,7 @@
 
 from enum import Enum
 from lib.progress import Progress
+from lib.register import NamespaceRegister
 import types
 
 class SimpleTask:
@@ -33,10 +34,11 @@ class SimpleTask:
 class TaskType(Enum):
     CONTINUE = 0
     STANDING = 1
-    STANDING_AFTER = 2
+    AFTER_STANDING = 2
+    WHILE = 3
 
 class Task:
-    def __init__(self, run:types.FunctionType, taskType, delay:Progress, repeat=Progress(0,1,0,1), repeatDelay=Progress(0,1,0,1), complete:bool=False):
+    def __init__(self, run:types.FunctionType, taskType, delay=Progress(0,0,0,1), repeat=Progress(0,1,0,1), repeatDelay=Progress(0,1,0,1), complete:bool=False):
         self.__type = taskType
         self.__delay = delay
         self.__repeat = repeat
@@ -86,15 +88,24 @@ class TaskLine:
                     if index != 0:
                         break
                     self.task_compute(task)
-                elif task.taskType == TaskType.STANDING_AFTER:
+                elif task.taskType == TaskType.AFTER_STANDING:
                     self.task_compute(task)
                     break
                 elif task.taskType == TaskType.CONTINUE:
                     self.task_compute(task)
+                else:
+                    self.task_compute(task)
         self.__all_complete = self.check_all_complete()
+    def get_approach_tasks(self):
+        for task in self.__tasks:
+            if task.taskType != TaskType.WHILE:
+                yield task
     def check_all_complete(self):
-        return all(task.is_complete for task in self.__tasks)
+        return all(task.is_complete for task in self.get_approach_tasks())
     def task_compute(self,task:Task):
+        if task.taskType == TaskType.WHILE:
+            task.run()
+            return
         if not task.is_complete:
             if task.delay.complete:
                 if task.repeatProgress.complete:
@@ -111,3 +122,18 @@ class TaskLine:
     @property
     def all_complete(self):
         return self.__all_complete
+
+class TaskLineLoader(NamespaceRegister):
+    def __init__(self):
+        super().__init__()
+    def register(self, key, object):
+        if isinstance(object,TaskLine):
+            return super().register(key, object)
+        raise TypeError("TaskLineオブジェクトのみスケジュールできます")
+    def tick(self):
+        for line in self.iter():
+            line[1].ticking()
+
+class TaskLineGenerater: #abstract class
+    def CreateTaskLine(self) -> TaskLine:
+        return TaskLine()

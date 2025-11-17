@@ -2,6 +2,7 @@ import pygame
 
 import lib.config as config
 from lib.sessions.package.difficult import FirstDifficultySession
+from lib import config
 from lib.progress import Progress
 from lib.stage import Stage
 from lib.health import Health
@@ -14,6 +15,11 @@ from lib.controller import PlayerControleBinder
 from lib.particle.camera import CURRENT_CAMERA
 
 pygame.init()
+
+fonts = [
+    config.get_font_path("Greek-Freak.ttf"),
+    config.get_font_path("kaisoutai.ttf")
+]
 
 screen = pygame.display.set_mode((1000,1000))
 clock = pygame.time.Clock()
@@ -49,7 +55,8 @@ session = FirstDifficultySession(
         entity_font.render("▲",True,(221, 3, 3)),
         5,
         pygame.font.SysFont("arial",150),
-        pygame.font.SysFont("arial",80)
+        pygame.font.SysFont("arial",80),
+        pygame.font.Font(str(fonts[1]),150)
     ),
     block_register,
     [
@@ -98,10 +105,8 @@ player_controller = [
 session.start()
 
 while runnable:
-    clock.tick(config.base_frame_rate)
     screen.fill((255,255,255))
     screen.blit(session.tick(),CURRENT_CAMERA.to_tuple())
-    pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             runnable = False
@@ -109,3 +114,6 @@ while runnable:
             for handler in player_controller:
                 if handler.key == event.key:
                     handler.command()
+    pygame.display.update()
+    clock.tick(config.base_frame_rate)
+

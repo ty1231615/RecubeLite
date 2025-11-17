@@ -11,7 +11,7 @@ line = TaskLine()
 line.add(
     Task(
         lambda: print("Hello"),
-        TaskType.STANDING_AFTER,
+        TaskType.AFTER_STANDING,
         Progress(0,60,0,1),
     )
 )
@@ -19,7 +19,7 @@ line.add(
 line.add(
     Task(
         lambda: print("World"),
-        TaskType.STANDING_AFTER,
+        TaskType.AFTER_STANDING,
         Progress(0,util.frame_to_second(1),0,1)
     )
 )
@@ -27,7 +27,7 @@ line.add(
 line.add(
     Task(
         lambda: print("TOU!!"),
-        TaskType.STANDING_AFTER,
+        TaskType.AFTER_STANDING,
         Progress(0,60,0,1)
     )
 )
