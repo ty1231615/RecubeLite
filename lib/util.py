@@ -1,6 +1,7 @@
 
 from lib.particle.waveCircle import WaveCircle
 from lib.entity import Entity
+from lib import config
 
 def safe_change_grid(grid, x, y, new_block):
     if 0 <= y < len(grid) and 0 <= x < len(grid[y]):
@@ -20,3 +21,6 @@ def minimum(x,y):
     if x <= y:
         return y
     return x
+
+def frame_to_second(second:int) -> int:
+    return config.base_frame_rate * second

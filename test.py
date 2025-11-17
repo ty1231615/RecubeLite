@@ -1,8 +1,39 @@
 
 from lib.progress import Progress
+from lib.task import Task,TaskLine,TaskType
+from lib import util
 import pygame
 
+clock = pygame.time.Clock()
 
-p = Progress(10, 20, 5, 1)
+line = TaskLine()
 
-print(p.normalize())
+line.add(
+    Task(
+        lambda: print("Hello"),
+        TaskType.STANDING_AFTER,
+        Progress(0,60,0,1),
+    )
+)
+
+line.add(
+    Task(
+        lambda: print("World"),
+        TaskType.STANDING_AFTER,
+        Progress(0,util.frame_to_second(1),0,1)
+    )
+)
+
+line.add(
+    Task(
+        lambda: print("TOU!!"),
+        TaskType.STANDING_AFTER,
+        Progress(0,60,0,1)
+    )
+)
+
+while True:
+    clock.tick(60)
+    line.ticking()
+
+    

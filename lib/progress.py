@@ -64,16 +64,31 @@ class Progress:
             self.__startline = False
     def reset(self):
         self.current = self.min
+        self.CURRENT_MODIFIER.claer()
+        self.MAX_MODIFIER.claer()
+        self.MIN_MODIFIER.claer()
     def normalize(self):
         return (self.current - self.min) / (self.max - self.min)
     @property
     def complete(self):
         self.act()
         return self.__complete
+    @complete.setter
+    def complete(self,value):
+        if isinstance(value,bool):
+            self.__complete = value
+        else:
+            raise TypeError("ブール値が期待されます")
     @property
     def startline(self):
         self.act()
         return self.__startline
+    @startline.setter
+    def startline(self,value):
+        if isinstance(value,bool):
+            self.__startline = value
+        else:
+            raise TypeError("ブール値が期待されます")
     @property
     def current(self):
         self.check()

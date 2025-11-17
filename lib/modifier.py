@@ -17,6 +17,8 @@ class Modifier:
     def remove(self,key):
         if key in self.modifiers:
             del self.__modifiers[key]
+    def claer(self):
+        self.modifiers.clear()
     @property
     def modifiers(self):
         return self.__modifiers
