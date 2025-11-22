@@ -2,6 +2,7 @@
 from lib.progress import Progress
 from lib.task import Task,TaskLine,TaskType
 from lib import util
+from lib.item import ItemData,ItemRegister
 import pygame
 
 clock = pygame.time.Clock()
@@ -31,9 +32,8 @@ line.add(
         Progress(0,60,0,1)
     )
 )
-
+"""
 while True:
     clock.tick(60)
     line.ticking()
-
-    
+"""

@@ -1,4 +1,5 @@
 from lib.stage import Stage
+from lib.entity import Entity
 from lib.player import Player
 from lib.computer import ComputeEnemy
 from lib.view import SessionDesignView
@@ -26,7 +27,6 @@ class Session:
         self.__health = health
         self.__default_health_data = (health.hp,health.max_hp)
         self.__players = players
-        self.__goal_position = Pos(0,0)
         self.__enemys = enemys
         self.__view = view
         self.__surface = surface
@@ -98,9 +98,6 @@ class Session:
             position = random.choice(positions)
             player.position.movePos(position)
             positions.remove(position)
-        if len(self.__players) != 0: #プレイヤーがいる場合のみゴールを作成
-            self.__goal_position = self.decide_arrive_goal_positions(random.choice(self.__players).position,100)
-            self.stage.createGoal(self.__goal_position)
         for enemy in self.get_enemys():
             position = random.choice(positions)
             enemy.position.movePos(position)
@@ -109,6 +106,9 @@ class Session:
             current_level = self.stage.level
             enemy.moveProgress.MAX_MODIFIER.add(Session.LEVEL_MODIFIER,-current_level)
             enemy.stayProgress.current = self.enemy_stayframe
+        if len(self.__players) != 0: #プレイヤーがいる場合のみゴールを作成
+            self.__goal_position = self.decide_arrive_goal_positions(random.choice(self.__players).position,100)
+            self.stage.createGoal(self.__goal_position)
     def tick(self) -> pygame.Surface:
         #この関数を毎フレーム呼び出す
         if self.__game_over:
@@ -119,8 +119,6 @@ class Session:
         self.draw_enemys() #敵の描画
         self.draw_players() #プレイヤーの描画
         self.draw_stage() #マップの描画
-        self.check_goal() #ゴール到達の確認
-        self.check_damage() #ダメージの確認
         self.task_line_handler.tick() #タスクハンドラーの実行
         SimpleTask.AllInstanceRun() #シンプルタスクの実行
         return self.__surface
@@ -132,6 +130,10 @@ class Session:
                 return visited
         if not self.can_move(position):
             return visited
+        #エネミーの位置も考慮する
+        for enemy in self.get_enemys():
+            if enemy.position.equals(position):
+                return visited
         visited.append(position)
         self.arrive_position(position.above(1),step-1,visited)
         self.arrive_position(position.below(1),step-1,visited)
@@ -172,11 +174,16 @@ class Session:
                     self.notice_health()
                     self.all_player_wave_particle((191, 9, 47))
                     return
-    def check_goal(self):
-        for player in self.get_players():
-            if self.__goal_position.equals(player.position):
+    def check_goal(self,pos:Pos) -> bool:
+        if self.get_block(pos).is_goal:
+            return True
+        return False
+    def on_move(self,entity:Entity): #エンティティが動作した場合に呼び出される
+        if isinstance(entity,Player):
+            if self.check_goal(entity.position): #ゴールの判定
                 self.goal()
                 return
+        self.check_damage() #ダメージの判定
     def draw_game_over(self):
         self.__surface.fill((0,0,0))
         game_over_text = self.__view.gameOverFont.render("YOU DIED",True,(255,0,0))
@@ -217,6 +224,8 @@ class Session:
         for enemy in self.__enemys:
             if enemy.valid:
                 yield enemy
+    def get_block(self,pos:Pos) -> BlockData:
+        return self.block_register.get(self.stage.stage[pos.y][pos.x])
     def getNearPlayer(self,fromPosition:Pos):
         if 0 < len(self.__players): #プレイヤーがいなければ終了する
             nearPlayer = self.__players[0]

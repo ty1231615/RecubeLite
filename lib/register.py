@@ -1,3 +1,4 @@
+import types
 
 class NotRegistedError(Exception):
     """
@@ -17,3 +18,15 @@ class NamespaceRegister:
     def iter(self):
         for registed in self.__registed:
             yield (registed, self.__registed[registed])
+
+class TypeRegister(NamespaceRegister):
+    def __init__(self,required_type:type):
+        self.__required_type = required_type
+        super().__init__()
+    def register(self, key, object):
+        if isinstance(object,self.__required_type):
+            return super().register(key, object)
+        raise TypeError(f"期待されるオブジェクトは {self.__required_type} です {type(object)} は使用できません")
+    @property
+    def required(self):
+        return self.__required_type

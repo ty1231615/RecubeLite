@@ -76,11 +76,15 @@ class TaskLine:
     def reset(self):
         for task in self.__tasks:
             task.reset()
-    def add(self,task:Task):
-        if isinstance(task,Task):
-            self.__tasks.append(task)
-        else:
+    def type_check(self,obj):
+        if not isinstance(obj,Task):
             raise TypeError("タスクオブジェクトのみスケジュールできます")
+    def insert(self,index,task):
+        self.type_check(task)
+        self.__tasks.insert(index,task)
+    def add(self,task:Task):
+        self.type_check(task)
+        self.__tasks.append(task)
     def ticking(self):
         for index, task in enumerate(self.__tasks):
             if not task.is_complete:

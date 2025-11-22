@@ -34,6 +34,7 @@ block_design.register(BlockData.WALL, block_font.render("■",True,(0,0,0)))
 block_design.register(BlockData.GOAL, block_font.render("■",True,(0, 70, 255)))
 
 player = Player(Pos(0,0))
+player.setSpeed(1)
 
 block_register = BlockRegister.DefaultRegister()
 

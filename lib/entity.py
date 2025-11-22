@@ -16,32 +16,32 @@ class Entity:
         if isinstance(value,int):
             self.__speed = value
     def above(self,session):
-        new_pos = self.position.above(1)
+        new_pos = self.position
         for i in range(self.speed):
-            if not session.can_move(new_pos):
-                return
-            new_pos = new_pos.above(1)
-        self.position.movePos(self.position.above(self.speed))
+            if not session.can_move(new_pos.above(1)):
+                break
+            self.position.movePos(new_pos.above(1))
+            session.on_move(self)
     def below(self,session):
-        new_pos = self.position.below(1)
+        new_pos = self.position
         for i in range(self.speed):
-            if not session.can_move(new_pos):
-                return
-            new_pos = new_pos.below(1)
-        self.position.movePos(self.position.below(self.speed))
+            if not session.can_move(new_pos.below(1)):
+                break
+            self.position.movePos(new_pos.below(1))
+            session.on_move(self)
     def right(self,session):
-        new_pos = self.position.right(1)
+        new_pos = self.position
         for i in range(self.speed):
-            if not session.can_move(new_pos):
-                return
-            new_pos = new_pos.right(1)
-        self.position.movePos(self.position.right(self.speed))
+            if not session.can_move(new_pos.right(1)):
+                break
+            self.position.movePos(new_pos.right(1))
+            session.on_move(self)
     def left(self,session):
-        new_pos = self.position.left(1)
+        new_pos = self.position
         for i in range(self.speed):
-            if not session.can_move(new_pos):
-                return
-            new_pos = new_pos.left(1)
-        self.position.movePos(self.position.left(self.speed))
+            if not session.can_move(new_pos.left(1)):
+                break
+            self.position.movePos(new_pos.left(1))
+            session.on_move(self)
     def setSpeed(self,speed):
         self.__speed = speed

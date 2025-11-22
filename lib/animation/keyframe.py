@@ -15,7 +15,5 @@ class PositionKeyFrame(Task):
     def step(self):
         normalize_progress = self.__easing_format(self.repeat.normalize()) #normalizeデータを同時にeasingフォーマットを適応する
         to_vec:Pos = self.__target_value.subtract(self.__from_position)
-
-
         self.__value_setter(to_vec.multiple(normalize_progress,normalize_progress).plus(self.__from_position.x,self.__from_position.y))
 

@@ -101,5 +101,6 @@ class AstarEnemy(ComputeEnemy):
                 root = astar(grid,self.position.toTuple(),nearPlayer.position.toTuple(),session.block_register)
                 if 1 < len(root):
                     self.position.move(*root[1])
+                    session.on_move(self)
         self.moveProgress.next()
         return self.position
