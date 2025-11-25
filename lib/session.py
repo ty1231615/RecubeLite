@@ -4,7 +4,8 @@ from lib.player import Player
 from lib.computer import ComputeEnemy
 from lib.view import SessionDesignView
 from lib.position import Pos
-from lib.block import BlockData,BlockRegister
+from lib.registers import BlockRegister
+from lib.block import BlockData
 from lib.task import SimpleTask
 from lib.progress import Progress
 from lib.health import Health
@@ -42,7 +43,7 @@ class Session:
         self.__stage.level = self.__defaut_stage_level
     def start(self):
         self.loadLevel()
-        self.all_player_wave_particle()
+        self.all_player_wave_particle(20,10)
     def createStage(self):
         self.stage.resetStage()
         self.stage.ScatterWall(self.__maxStageLevel)
@@ -53,18 +54,18 @@ class Session:
     def restart(self):
         self.gameInit()
         self.loadLevel()
-        self.all_player_wave_particle()
-    def all_player_wave_particle(self,color=(255, 128, 64)):
+        self.all_player_wave_particle(15,10)
+    def all_player_wave_particle(self,maxRadiusDelta,WaveWidthDelta,color=(255, 128, 64)):
         for player in self.get_players():
-            self.player_wave_particle(player,color)
-    def player_wave_particle(self,player:Player,color):
+            self.player_wave_particle(player,color,maxRadiusDelta,WaveWidthDelta)
+    def player_wave_particle(self,player:Player,color,maxRadiusDelta,WaveWidthDelta):
         particle_pos = util.safe_get_grid(self.__render_details,player.position.x,player.position.y)
         if particle_pos:
             particle_pos = Pos(particle_pos.x,particle_pos.y)
             #プレイヤーの中心になるようにパーティクルの位置を調整
             particle_pos.x = particle_pos.x + int(self.view.playerDesign.get_width() / 2)
             particle_pos.y = particle_pos.y + int(self.view.playerDesign.get_height() / 2)
-            self.view.playerWaveParticle(self.__surface,particle_pos.toTuple(),30, color)
+            self.view.playerWaveParticle(self.__surface,particle_pos.toTuple(),30, color,maxRadiusDelta,WaveWidthDelta)
     def notice_now_stage(self):
         text = self.view.upperNoticeFont.render(f"< {self.__count_stage} >",True,(6, 7, 113))
         self.task_line_handler.register(
@@ -72,7 +73,7 @@ class Session:
             UpperNotice(
                 self.__surface,
                 text,
-                Pos(self.__surface.get_width() / 2 - text.get_width() / 2, -200),
+                Pos(int(self.__surface.get_width() / 2 - text.get_width() / 2), -200),
                 300
             ).CreateTaskLine()
         )
@@ -83,7 +84,7 @@ class Session:
             UpperNotice(
                 self.__surface,
                 text,
-                Pos(self.__surface.get_width() / 2 - text.get_width() / 2, -200),
+                Pos(int(self.__surface.get_width() / 2 - text.get_width() / 2), -200),
                 300
             ).CreateTaskLine()
         )
@@ -159,7 +160,7 @@ class Session:
         self.__count_stage += 1
         self.stage.level += 1
         self.loadLevel()
-        self.all_player_wave_particle()
+        self.all_player_wave_particle(20,10)
         self.notice_now_stage()
     def check_damage(self):
         for player in self.get_players():
@@ -172,7 +173,7 @@ class Session:
                         return
                     self.loadLevel()
                     self.notice_health()
-                    self.all_player_wave_particle((191, 9, 47))
+                    self.all_player_wave_particle(10,5,(191, 9, 47))
                     return
     def check_goal(self,pos:Pos) -> bool:
         if self.get_block(pos).is_goal:
@@ -191,17 +192,23 @@ class Session:
         result_text = self.__view.resultTextFont.render(f"STAGE REACHED: {self.__count_stage}",True,(255,255,255))
         self.__surface.blit(result_text,(self.__surface.get_width() / 2 - result_text.get_width() / 2,self.__surface.get_height() / 2))
     def draw_stage(self):
+        base_x = 0
+        base_y = 0
         for y in range(len(self.stage.stage)):
+            first_block_surface = self.__view.blockDesigns.get(self.stage.stage[y][0])
+            base_y += self.__view.blockPadding + first_block_surface.get_height()
+            base_x = 0
             for x in range(len(self.stage.stage[y])):
                 no_draw = False
+                block = self.stage.stage[y][x]
+                blockSurface = self.__view.blockDesigns.get(block)
+                base_x += self.__view.blockPadding + blockSurface.get_width()
                 for entity in self.entity_itereter():
                     if entity.position.equals(Pos(x,y)):
                         no_draw = True
-                if no_draw:
+                if no_draw: #エンティティと重なっている部分のブロックは描画しない
                     continue
-                block = self.stage.stage[y][x]
-                blockSurface = self.__view.blockDesigns.get(block)
-                rect = self.__surface.blit(blockSurface,((x+1) * self.__view.blockPadding + blockSurface.get_width() * x,1 + y * self.__view.blockPadding + blockSurface.get_height() * (y+1)))
+                rect = self.__surface.blit(blockSurface,(base_x,base_y))
                 self.__render_details[y][x] = Pos(rect.x,rect.y)
     def draw_players(self):
         for player in self.get_players():
@@ -242,6 +249,9 @@ class Session:
         for entity in self.get_enemys():
             grid[entity.position.y][entity.position.x] = BlockData.WALL
         return grid
+    @property
+    def surface(self):
+        return self.__surface
     @property
     def stage(self):
         return self.__stage

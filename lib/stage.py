@@ -1,4 +1,5 @@
-from lib.block import BlockData,BlockRegister
+from lib.block import BlockData
+from lib.registers import BlockRegister
 from lib.position import Pos
 
 import random

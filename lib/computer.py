@@ -3,7 +3,8 @@ from lib.entity import Entity
 from lib.enemy import Enemy
 from lib.progress import Progress
 from lib.position import Pos
-from lib.block import BlockData,BlockRegister
+from lib.block import BlockData
+from lib.registers import BlockRegister
 from lib import util
 
 import heapq

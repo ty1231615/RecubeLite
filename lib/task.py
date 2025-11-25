@@ -38,7 +38,7 @@ class TaskType(Enum):
     WHILE = 3
 
 class Task:
-    def __init__(self, run:types.FunctionType, taskType, delay=Progress(0,0,0,1), repeat=Progress(0,1,0,1), repeatDelay=Progress(0,1,0,1), complete:bool=False):
+    def __init__(self, run:types.FunctionType|types.MethodType|types.LambdaType, taskType, delay=Progress(0,0,0,1), repeat=Progress(0,1,0,1), repeatDelay=Progress(0,1,0,1), complete:bool=False):
         self.__type = taskType
         self.__delay = delay
         self.__repeat = repeat

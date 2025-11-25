@@ -10,8 +10,10 @@ class Health:
         self.__hp_modifier = Modifier()
         self.__max_hp_modifier = Modifier()
         self.__dead = False
-    def damage(self,value):
+    def damage(self,value:int):
         self.__hp -= value
+    def heal(self,value:int):
+        self.__hp += value
     def get_hit_point(self):
         result = util.minimum(util.maximum(self.__hp_modifier(self.__hp),self.__max_hp_modifier(self.__max_hp)),0)
         if result <= 0:

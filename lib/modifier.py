@@ -14,6 +14,13 @@ class Modifier:
         return result
     def add(self,key:str,value:int):
         self.__modifiers.update({key:value})
+    def increase(self,key:str,value:int):
+        self.__modifiers[key] += value
+    def increase_with_create(self,key:str,value:int):
+        if key in self.__modifiers:
+            self.increase(key,value)
+        else:
+            self.add(key,value)
     def remove(self,key):
         if key in self.modifiers:
             del self.__modifiers[key]

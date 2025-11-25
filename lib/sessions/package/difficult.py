@@ -1,20 +1,22 @@
-
 from pygame import Surface
+
+from lib.session import Session
 from lib.computer import ComputeEnemy
 from lib.player import Player
 from lib.progress import Progress
-from lib.sessions.levelSession import StepWithLevelSession
 from lib.stage import Stage
 from lib.view import SessionDesignView
-from lib.block import BlockRegister
+from lib.registers import BlockRegister
 from lib.health import Health
 
-class FirstDifficultySession(StepWithLevelSession):
+class FirstDifficultySession(Session):
     """
     進んだステージに応じて新たな敵が出現する
     """
-    def __init__(self, surface: Surface, stage: Stage, stageLevel: int, maxStageLevel: int, health: Health, players: list[Player], enemys: list[ComputeEnemy], view: SessionDesignView, block_register:BlockRegister, addEnemys:list[ComputeEnemy], levelStepProgress: Progress) -> None:
-        super().__init__(surface, stage, stageLevel, maxStageLevel, health, players, enemys, view, block_register, levelStepProgress, Progress(0, len(addEnemys)-1, 0, 1))
+    def __init__(self, surface: Surface, stage: Stage, stageLevel: int, maxStageLevel: int, health: Health, players: list[Player], enemys: list[ComputeEnemy], view: SessionDesignView, block_register:BlockRegister, addEnemys:list[ComputeEnemy], enemySpawnProgress: Progress) -> None:
+        super().__init__(surface, stage, stageLevel, maxStageLevel, health, players, enemys, view, block_register)
+        self.__enemy_spawn_progress = enemySpawnProgress
+        self.__enemy_spawn_step = Progress(0,len(addEnemys)-1,0,1)
         self.__addEemys = addEnemys
         self.CheckAddEnemy()
     @property
@@ -23,24 +25,37 @@ class FirstDifficultySession(StepWithLevelSession):
     @addEnemys.setter
     def addEnemys(self, value):
         self.__addEemys = value
-        self.GimicStep.max = len(self.__addEemys)
+        self.enemy_spawn_step.max = len(self.__addEemys)
     def gameInit(self):
         super().gameInit()
-        self.addenemyInvalidAll()
-        self.CheckAddEnemy()
-    def addenemyInvalidAll(self):
+        self.InvalidAllnewEnemy()
+        self.enemy_spawn_progress.reset()
+        self.enemy_spawn_step.reset()
+    def InvalidAllnewEnemy(self):
         for enemy in self.addEnemys:
             enemy.invalid()
     def CheckAddEnemy(self):
-        step = self.GimicStep.current
-        if step > 0 and step <= len(self.addEnemys):
+        step = self.enemy_spawn_step.current
+        if step >= 0 and step <= len(self.addEnemys):
             new_enemy = self.addEnemys[step]
             new_enemy.active()
             new_enemy.stayProgress.current = self.enemy_stayframe
-    def OnGimicStep(self):
-        self.CheckAddEnemy()
+    def goal(self):
+        super().goal()
+        self.enemy_spawn_progress.next()
+        if self.enemy_spawn_progress.complete:
+            self.CheckAddEnemy()
+            if not self.enemy_spawn_step.complete:
+                self.enemy_spawn_step.next()
+            self.enemy_spawn_progress.reset()
     def get_enemys(self):
         yield from super().get_enemys()
         for enemy in self.addEnemys:
             if enemy.valid:
                 yield enemy
+    @property
+    def enemy_spawn_progress(self):
+        return self.__enemy_spawn_progress
+    @property
+    def enemy_spawn_step(self):
+        return self.__enemy_spawn_step

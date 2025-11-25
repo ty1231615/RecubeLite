@@ -1,20 +1,15 @@
 from lib.particle.waveCircle import WaveCircle
 from lib.progress import Progress
 from lib import easing
-from lib.register import NamespaceRegister
+from lib.register import TypeRegister
 
 import pygame
 
-class Design(NamespaceRegister):
-    def __init__(self) -> None:
-        self.__designs = {}
-    def register(self,key,design:pygame.Surface):
-        if isinstance(design,pygame.Surface):
-            self.__designs.update({key:design})
-        else:
-            raise TypeError(f"{design} は不適切なオブジェクトです")
-    def get(self,key) -> pygame.Surface:
-        return self.__designs[key]
+class Design(TypeRegister):
+    def __init__(self):
+        super().__init__(pygame.Surface)
+    def get(self, key) -> pygame.Surface:
+        return super().get(key)
 
 class SessionDesignView:
     def __init__(self, blockDesign: Design, player: pygame.Surface, enemy: pygame.Surface, blockPadding: int, gameOverFont: pygame.font.Font, resultTextFont: pygame.font.Font, upperNoticeFont: pygame.font.Font) -> None:
@@ -25,9 +20,9 @@ class SessionDesignView:
         self.__game_over_font = gameOverFont
         self.__result_text_font = resultTextFont
         self.__upper_notice_font = upperNoticeFont
-    def playerWaveParticle(self,surface:pygame.Surface, center: tuple[int,int], maxTime,color:tuple[int,int,int]):
+    def playerWaveParticle(self,surface:pygame.Surface, center: tuple[int,int], maxTime,color:tuple[int,int,int],maxRadiusDelta:float|int,WaveWidthDelta:float|int):
         delta = (self.playerDesign.get_width() + self.playerDesign.get_height()) / 2
-        return WaveCircle(surface,center,Progress(0, maxTime, 0, 1), delta * 15, color, delta * 5)
+        return WaveCircle(surface,center,Progress(0, maxTime, 0, 1), int(delta * maxRadiusDelta), color, int(delta * WaveWidthDelta))
     @property
     def blockDesigns(self):
         return self.__block_design
