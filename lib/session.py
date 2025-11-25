@@ -233,6 +233,8 @@ class Session:
                 yield enemy
     def get_block(self,pos:Pos) -> BlockData:
         return self.block_register.get(self.stage.stage[pos.y][pos.x])
+    def set_block(self,pos:Pos,blockID):
+        self.stage.stage[pos.y][pos.x] = blockID
     def getNearPlayer(self,fromPosition:Pos):
         if 0 < len(self.__players): #プレイヤーがいなければ終了する
             nearPlayer = self.__players[0]

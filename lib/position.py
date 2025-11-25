@@ -58,3 +58,5 @@ class Pos:
         raise TypeError("引数にはPosが期待されます")
     def multiple(self,x,y):
         return Pos(self.x * x, self.y * y)
+    def copy(self):
+        return Pos(self.x,self.y)
