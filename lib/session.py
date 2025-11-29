@@ -164,7 +164,7 @@ class Session:
             return fromPosition
         return random.choice(arrive_positions)
     def can_move(self,position:Pos) -> bool:
-        if not self.stay_clock.startline and self.__pause:
+        if not self.stay_clock.startline or self.__pause:
             return False
         if 0 <= position.x < self.stage.width and 0 <= position.y < self.stage.height:
             block = self.stage.stage[position.y][position.x]
