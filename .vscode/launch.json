@@ -8,7 +8,7 @@
             "name": "Python デバッガー: 現在のファイル",
             "type": "debugpy",
             "request": "launch",
-            "program": "recube.py",
+            "program": "${file}",
             "console": "integratedTerminal"
         }
     ]

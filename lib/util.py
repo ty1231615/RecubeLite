@@ -1,7 +1,7 @@
-
 from lib.particle.waveCircle import WaveCircle
 from lib.entity import Entity
 from lib import config
+import pygame
 
 def safe_change_grid(grid, x, y, new_block):
     if 0 <= y < len(grid) and 0 <= x < len(grid[y]):
@@ -27,3 +27,6 @@ def frame_to_second(second:int) -> int:
 
 def get_difference_base_frame(frame):
     return config.base_frame_rate / frame
+
+def item_image_load(image_name):
+    return pygame.image.load("asset/images/item/" + image_name)

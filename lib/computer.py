@@ -9,7 +9,7 @@ from lib import util
 
 import heapq
 
-def astar(grid, start, goal,block_register:BlockRegister):
+def astar(grid, start, goal, block_register:BlockRegister):
     """
     2次元グリッド上のA*アルゴリズム
     

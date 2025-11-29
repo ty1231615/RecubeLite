@@ -1,39 +1,10 @@
 
-from lib.progress import Progress
-from lib.task import Task,TaskLine,TaskType
-from lib import util
-from lib.item import ItemData,ItemRegister
-import pygame
+price = int(input("値段をいれてちょ: "))
+ans = input("お持ち帰りですか？: ")
 
-clock = pygame.time.Clock()
+if ans == "●":
+    result = price * 1.1 # type: ignore
+else:
+    result = price * 1.08 # type: ignore
 
-line = TaskLine()
-
-line.add(
-    Task(
-        lambda: print("Hello"),
-        TaskType.AFTER_STANDING,
-        Progress(0,60,0,1),
-    )
-)
-
-line.add(
-    Task(
-        lambda: print("World"),
-        TaskType.AFTER_STANDING,
-        Progress(0,util.frame_to_second(1),0,1)
-    )
-)
-
-line.add(
-    Task(
-        lambda: print("TOU!!"),
-        TaskType.AFTER_STANDING,
-        Progress(0,60,0,1)
-    )
-)
-"""
-while True:
-    clock.tick(60)
-    line.ticking()
-"""
+print("値段は" + str(int(result)) + "円です")

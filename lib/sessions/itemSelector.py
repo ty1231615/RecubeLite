@@ -9,18 +9,24 @@ import pygame
 
 #アイテムボックスのアイテムを選択するタスク
 class ItemSelection(TaskLineGenerater):
-    def __init__(self,session:Session,font_path,items:tuple[Item]) -> None:
+    def __init__(self,session:Session,font_path,padding:int,items:tuple[Item]) -> None:
         self.__session = session
         self.__surface = self.__session.surface
         self.__items = items
+        self.__center_position = Pos(0,0)
+        self.__padding = 0
     def CreateTaskLine(self) -> TaskLine:
         line = TaskLine()
 
         StartPosition = Pos(self.__surface.get_width() / 2,-200)
-        item_padding = self.__surface.get_width() / (len(self.__items) + 1)
+        self.__center_position = StartPosition
+        self.__padding = self.__surface.get_width() / (len(self.__items) + 1)
 
         line.add(
-            
+            Task(
+                self.__view,
+                TaskType.WHILE,
+            )
         )
 
         line.add(
@@ -33,8 +39,11 @@ class ItemSelection(TaskLineGenerater):
             )
         )
 
+        
+
         return line
     def __position_setter(self,pos:Pos):
-        pass
-    def __view(self):
-        pass
+        self.__center_position = pos
+    def __view(self,controller:TaskController):
+        for index, item in enumerate(self.__items):
+            self.__surface.blit(pygame.transform.scale(item.image,(self.__padding,self.__padding)),(self.__center_position.x - self.__padding * int(index / len(self.__items)),self.__center_position.y))
