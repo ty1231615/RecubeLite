@@ -2,7 +2,7 @@
 import math
 
 class Pos:
-    def __init__(self,x:int,y:int) -> None:
+    def __init__(self,x,y) -> None:
         self.__x = x
         self.__y = y
     def value_error(self):

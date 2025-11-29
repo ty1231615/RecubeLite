@@ -1,4 +1,4 @@
-from lib.task import Task,TaskType,TaskLine
+from lib.task import Task,TaskType,TaskLine,TaskController
 from lib.position import Pos
 from lib.progress import Progress
 from lib import easing
@@ -12,7 +12,7 @@ class PositionKeyFrame(Task):
         self.__value_setter = valueSetter #算出された数値を渡す関数 (一つ目の引数にデータを渡す)
         self.__from_position = fromPosition
         self.__target_value = targetPosition
-    def step(self):
+    def step(self,controller:TaskController):
         normalize_progress = self.__easing_format(self.repeat.normalize()) #normalizeデータを同時にeasingフォーマットを適応する
         to_vec:Pos = self.__target_value.subtract(self.__from_position)
         self.__value_setter(to_vec.multiple(normalize_progress,normalize_progress).plus(self.__from_position.x,self.__from_position.y))

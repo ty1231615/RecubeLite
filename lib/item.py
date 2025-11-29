@@ -1,8 +1,7 @@
 from enum import Enum
 from lib.block import BlockData
 from lib.entity import Entity
-from lib.session import Session
-    
+
 
 class ItemType(Enum):
     Support = 0
@@ -14,7 +13,7 @@ class Item:
         self.__name = name
         self.__description = description
         self.__replace_block_id = replace_block_id
-    def on_touch(self,session:Session,entity:Entity) -> bool:
+    def on_touch(self,session,entity:Entity) -> bool:
         return False
     @property
     def name(self):
@@ -33,7 +32,7 @@ class ItemBox(BlockData):
     def __init__(self,items:tuple[Item]):
         super().__init__(True, False)
         self.__items = items
-    def lottery(self,session:Session) -> Item:
+    def lottery(self,session,entity) -> Item:
         ...
     @property
     def items(self):

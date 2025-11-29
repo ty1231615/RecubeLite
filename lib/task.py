@@ -3,6 +3,7 @@ from enum import Enum
 from lib.progress import Progress
 from lib.register import NamespaceRegister
 import types
+import inspect
 
 class SimpleTask:
     _INSTANCE = []
@@ -38,15 +39,21 @@ class TaskType(Enum):
     WHILE = 3
 
 class Task:
-    def __init__(self, run:types.FunctionType|types.MethodType|types.LambdaType, taskType, delay=Progress(0,0,0,1), repeat=Progress(0,1,0,1), repeatDelay=Progress(0,1,0,1), complete:bool=False):
+    def __init__(self, run:types.FunctionType|types.MethodType|types.LambdaType, taskType, delay=Progress(0,0,0,1), repeat=Progress(0,1,0,1), repeatDelay=Progress(0,0,0,1), complete:bool=False):
         self.__type = taskType
         self.__delay = delay
         self.__repeat = repeat
         self.__repeatProgress = repeatDelay
         self.__run = run
+        Task._signature_check(self.__run)
         self.__complete = complete
-    def run(self):
-        return self.__run()
+    @classmethod
+    def _signature_check(cls,func):
+        func_signature = inspect.signature(func)
+        if not len(func_signature.parameters) > 0:
+            raise TypeError("タスクされる関数は引数が一つ以上必要です")
+    def run(self,taskController):
+        return self.__run(taskController)
     def complete(self):
         self.__complete = True
     def reset(self):
@@ -69,10 +76,25 @@ class Task:
     def taskType(self):
         return self.__type
 
+class TaskController:
+    def __init__(self,target_task:Task,before_task_result):
+        self.__task = target_task
+        self.__before_task_result = before_task_result
+    @property
+    def task(self):
+        return self.__task
+    @property
+    def before_task_return(self):
+        return self.__before_task_result
+    def complete(self):
+        self.__task.complete()
+
+
 class TaskLine:
     def __init__(self):
-        self.__tasks:list[Task] = []
+        self.__tasks = []
         self.__all_complete = False
+        self.__before_return = None
     def reset(self):
         for task in self.__tasks:
             task.reset()
@@ -102,23 +124,22 @@ class TaskLine:
         self.__all_complete = self.check_all_complete()
     def get_approach_tasks(self):
         for task in self.__tasks:
-            if task.taskType != TaskType.WHILE:
-                yield task
+            yield task
     def check_all_complete(self):
         return all(task.is_complete for task in self.get_approach_tasks())
-    def task_compute(self,task:Task):
-        if task.taskType == TaskType.WHILE:
-            task.run()
-            return
+    def task_compute(self,task:Task,*arg,**kwarg):
         if not task.is_complete:
+            taskController = TaskController(task,self.__before_return)
+            if task.taskType == TaskType.WHILE:
+                task.run(taskController)
+                return
             if task.delay.complete:
                 if task.repeatProgress.complete:
-                    #print(task.repeat.current)
-                    #print(task.repeat.complete)
-                    task.run()
+                    _return = task.run(taskController)
                     task.repeat.next()
                     if task.repeat.complete:
                         task.complete()
+                        self.__before_return = _return
                         return
                     task.repeatProgress.reset()
                 task.repeatProgress.next()
@@ -138,6 +159,6 @@ class TaskLineLoader(NamespaceRegister):
         for line in self.iter():
             line[1].ticking()
 
-class TaskLineGenerater: #abstract class
+class TaskLineGenerater: #タスク生成が可能なインターフェイス
     def CreateTaskLine(self) -> TaskLine:
         return TaskLine()

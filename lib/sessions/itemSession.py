@@ -29,7 +29,7 @@ class ItemSessionDesign(SessionDesignView):
 class NormalItemBox(ItemBox):
     def __init__(self, items: tuple[Item]):
         super().__init__(items)
-    def lottery(self,session:Session):
+    def lottery(self,session:Session,entity:Entity):
         pass
 
 class ItemSession(Session):
