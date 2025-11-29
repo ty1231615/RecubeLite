@@ -102,6 +102,8 @@ player_controller = [
         PlayerControleBinder(pygame.K_RIGHT,lambda: player.right(session)),
         #スペースでリロード
         PlayerControleBinder(pygame.K_SPACE,lambda: session.check_restart()),
+        #ESCでポーズ
+        PlayerControleBinder(pygame.K_ESCAPE,lambda: session.switch_pause())
     ]
 
 session.start()

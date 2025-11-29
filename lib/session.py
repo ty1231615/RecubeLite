@@ -35,6 +35,7 @@ class Session:
         self.__block_register = block_register
         self.__task_line_handler = TaskLineLoader()
         self.enemy_stayframe = 120
+        self.__pause = False
         self.__stay_clock = Progress(0, 1000, 0, -1) #プログレスが1以上ならtickで何も行わない
     def gameInit(self):
         self.__count_stage = 1
@@ -91,6 +92,17 @@ class Session:
     def stay_shake(self,frame):
         self.stay_clock.current = frame
         ShakingCamera(Progress(0,frame,0,1),-20,20)
+    def switch_pause(self):
+        if self.__pause:
+            self.__pause = False
+        else:
+            self.__pause = True
+    def on_pause(self):
+        text = self.view.gameOverFont.render("Puase ...",True,(113, 50, 202))
+        self.__surface.blit(
+            text,
+            (self.__surface.get_width() / 2 - text.get_width() / 2,200)
+        )
     def loadLevel(self):
         self.createStage()
         self.draw_stage()
@@ -116,10 +128,13 @@ class Session:
             self.draw_game_over()
             SimpleTask.AllInstanceRun() #シンプルタスクの実行
             return self.__surface
-        self.compute_enemys() #敵の移動計算
         self.draw_enemys() #敵の描画
         self.draw_players() #プレイヤーの描画
         self.draw_stage() #マップの描画
+        if self.__pause:
+            self.on_pause()
+            return self.__surface
+        self.compute_enemys() #敵の移動計算
         self.task_line_handler.tick() #タスクハンドラーの実行
         SimpleTask.AllInstanceRun() #シンプルタスクの実行
         return self.__surface
