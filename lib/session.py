@@ -156,7 +156,7 @@ class Session:
         self.arrive_position(position.left(1),step-1,visited)
         self.arrive_position(position.right(1),step-1,visited)
         return visited
-    def decide_arrive_goal_positions(self,fromPosition:Pos,step:int=100) -> Pos:
+    def decide_arrive_goal_positions(self,fromPosition:Pos,step:int=1000) -> Pos:
         arrive_positions = self.arrive_position(fromPosition,step,[])
         if fromPosition in arrive_positions:
             arrive_positions.remove(fromPosition)
