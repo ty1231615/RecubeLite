@@ -36,7 +36,7 @@ class NormalItemBox(ItemBox):
         super().__init__(replace_block_id,items)
     def lottery(self,session:Session,entity:Entity):
         if isinstance(entity,Player):
-            selector = ItemSelection(session,entity,str(fonts[1]),360,self.items)
+            selector = ItemSelection(session,entity,str(fonts[1]),380,self.items)
             session.task_line_handler.register(ItemSelection.NAMESPACE,selector.CreateTaskLine())
 
 class ItemSession(Session):
