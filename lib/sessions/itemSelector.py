@@ -25,7 +25,7 @@ class ItemSelection(TaskLineGenerater):
         pygame.K_9,
         pygame.K_0
     ]
-    def __init__(self,session:Session, select_player:Player, font_path:str, movement_height:int, items:tuple[Item], description_color=(34, 34, 34)) -> None:
+    def __init__(self,session:Session, select_player:Player, font_path:str, movement_height:int, items:tuple[Item], description_color=(226, 133, 46)) -> None:
         self.__session = session
         self.__surface = self.__session.surface
         self.__items = items
@@ -39,11 +39,11 @@ class ItemSelection(TaskLineGenerater):
         self.__selected = False
     def CreateTaskLine(self) -> TaskLine:
         line = TaskLine()
-        StartPosition = Pos(self.__surface.get_width() / 2,-self.__movement_height)
+        self.__padding = self.__surface.get_width() / (len(self.__items)+1)
+        StartPosition = Pos(self.__surface.get_width() / 2,-self.__padding)
         TargetPosition = StartPosition.plus(0,self.__movement_height)
         self.__center_position = StartPosition.copy()
-        self.__padding = self.__surface.get_width() / (len(self.__items))
-        self.__font = pygame.font.Font(self.__font_path)
+        self.__font = pygame.font.Font(self.__font_path,int(self.__padding / 13))
 
         line.add(
             Task(
@@ -93,10 +93,10 @@ class ItemSelection(TaskLineGenerater):
         self.__center_position = pos.copy()
     def __view(self,controller:TaskController):
         for index, item in enumerate(self.__items):
-            blit_pos = Pos(self.__padding * (index),self.__center_position.y)
+            blit_pos = Pos(self.__center_position.x + -self.__padding * (index),self.__center_position.y)
             self.__surface.blit(pygame.transform.scale(item.image,(self.__padding,self.__padding)),blit_pos.toTuple())
             description = self.__font.render(item.description,True,self.__description_color)
-            self.__surface.blit(description,description.get_rect(center=blit_pos.plus(0,self.__padding).toTuple()))
+            self.__surface.blit(description,description.get_rect(center=blit_pos.plus(self.__padding/2,self.__padding).toTuple()))
     def __bind_selecter(self,controller:TaskController):
         for index in range(len(self.__items)):
             self.__select_player.add_controle(PlayerControleBinder(ItemSelection.SELECT_KEY[index],lambda: self.__select(index)))

@@ -10,7 +10,7 @@ from lib.block import BlockData
 from lib.registers import BlockRegister
 from lib.position import Pos
 from lib.player import Player
-from lib.items import HealOrb
+from lib.items import HealOrb,StunOrb
 from lib.view import Design
 from lib.sessions.itemSession import ItemSessionDesign
 from lib.computer import AstarEnemy
@@ -70,21 +70,21 @@ session = FirstDifficultySession(
     AstarEnemy(Pos(0,0),15,1,False),
     AstarEnemy(Pos(0,0),10,1,False),
     #これ以降は一定の速度のエネミーを配置
-    AstarEnemy(Pos(0,0),20,1,False),
-    AstarEnemy(Pos(0,0),20,1,False),
-    AstarEnemy(Pos(0,0),20,1,False),
-    AstarEnemy(Pos(0,0),20,1,False),
-    AstarEnemy(Pos(0,0),20,1,False),
-    AstarEnemy(Pos(0,0),20,1,False),
-    AstarEnemy(Pos(0,0),20,1,False),
-    AstarEnemy(Pos(0,0),20,1,False),
-    AstarEnemy(Pos(0,0),20,1,False),
-    AstarEnemy(Pos(0,0),20,1,False),
-    AstarEnemy(Pos(0,0),20,1,False),
-    AstarEnemy(Pos(0,0),2,1,False),
+    AstarEnemy(Pos(0,0),15,1,False),
+    AstarEnemy(Pos(0,0),14,1,False),
+    AstarEnemy(Pos(0,0),13,1,False),
+    AstarEnemy(Pos(0,0),12,1,False),
+    AstarEnemy(Pos(0,0),11,1,False),
+    AstarEnemy(Pos(0,0),10,1,False),
+    AstarEnemy(Pos(0,0),9,1,False),
+    AstarEnemy(Pos(0,0),8,1,False),
+    AstarEnemy(Pos(0,0),7,1,False),
+    AstarEnemy(Pos(0,0),6,1,False),
+    AstarEnemy(Pos(0,0),5,1,False),
+    AstarEnemy(Pos(0,0),4,1,False),
     ],
     Progress(0,5,0,1),
-    (HealOrb(),HealOrb(),HealOrb(),HealOrb()),
+    (HealOrb(),StunOrb()),
     ()
 )
 
