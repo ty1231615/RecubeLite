@@ -122,6 +122,8 @@ class Session:
         if len(self.__players) != 0: #プレイヤーがいる場合のみゴールを作成
             self.__goal_position = self.decide_arrive_goal_positions(random.choice(self.__players).position,100)
             self.stage.createGoal(self.__goal_position)
+            if self.__goal_position in positions:
+                positions.remove(self.__goal_position)
         return positions
     def tick(self) -> pygame.Surface:
         #この関数を毎フレーム呼び出す

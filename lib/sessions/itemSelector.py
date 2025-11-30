@@ -94,7 +94,7 @@ class ItemSelection(TaskLineGenerater):
     def __view(self,controller:TaskController):
         for index, item in enumerate(self.__items):
             blit_pos = Pos(self.__padding * (index) + self.__padding / 2,self.__center_position.y)
-            self.__surface.blit(pygame.transform.scale(item.image,(self.__padding,self.__padding)),blit_pos.toTuple())
+            self.__surface.blit(pygame.transform.scale(item.image,(self.__padding / 1.5,self.__padding / 1.5)),blit_pos.plus(self.__padding / 5, self.__padding / 5).toTuple())
             description = self.__font.render(item.description,True,self.__description_color)
             self.__surface.blit(description,description.get_rect(center=blit_pos.plus(self.__padding/2,self.__padding).toTuple()))
     def __bind_selecter(self,controller:TaskController):
