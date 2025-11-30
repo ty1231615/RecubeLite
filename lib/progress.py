@@ -64,11 +64,16 @@ class Progress:
             self.__startline = False
     def reset(self):
         self.current = self.min
-        self.CURRENT_MODIFIER.claer()
-        self.MAX_MODIFIER.claer()
-        self.MIN_MODIFIER.claer()
+        self.CURRENT_MODIFIER.clear()
+        self.MAX_MODIFIER.clear()
+        self.MIN_MODIFIER.clear()
     def normalize(self):
-        return (self.current - self.min) / (self.max - self.min)
+        # protect against division by zero when max == min
+        denom = (self.max - self.min)
+        if denom == 0:
+            # if no range, return 1.0 when at or beyond max, otherwise 0.0
+            return 1.0 if self.current >= self.max else 0.0
+        return (self.current - self.min) / denom
     @property
     def complete(self):
         self.act()

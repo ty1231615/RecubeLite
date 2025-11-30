@@ -10,11 +10,10 @@ class ItemType(Enum):
     Assist = 1
 
 class Item:
-    def __init__(self,item_type:ItemType,name:str,image_name:str="no_image",description:str="New Item !",replace_block_id=BlockData.AIR):
+    def __init__(self,item_type:ItemType,name:str,image_name:str="no_image.jpg",description:str="New Item !"):
         self.__item_type = item_type
         self.__name = name
         self.__description = description
-        self.__replace_block_id = replace_block_id
         self.__image = item_image_load(image_name)
     def on_touch(self,session,entity:Entity) -> bool:
         return False
@@ -30,16 +29,17 @@ class Item:
     @property
     def image(self):
         return self.__image
-    @property
-    def replace_block_id(self):
-        return self.__replace_block_id
     
 class ItemBox(BlockData):
-    def __init__(self,items:tuple[Item]):
+    def __init__(self,replace_block_id:str,items:tuple[Item]):
         super().__init__(True, False)
         self.__items = items
-    def lottery(self,session,entity) -> Item:
+        self.__replace_block_id = replace_block_id
+    def lottery(self,session,entity):
         ...
     @property
     def items(self):
         return self.__items
+    @property
+    def replace_block_id(self):
+        return self.__replace_block_id

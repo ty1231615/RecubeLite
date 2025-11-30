@@ -13,7 +13,15 @@ class PositionKeyFrame(Task):
         self.__from_position = fromPosition
         self.__target_value = targetPosition
     def step(self,controller:TaskController):
-        normalize_progress = self.__easing_format(self.repeat.normalize()) #normalizeデータを同時にeasingフォーマットを適応する
+        normalize = self.repeat.normalize()
+        # when normalize reaches 1.0, directly set target to avoid floating-point rounding errors
+        if normalize >= 1.0:
+            return
+        # apply easing function to the normalized progress (0.0 ~ 1.0)
+        normalize_progress = self.__easing_format(normalize)
+        # interpolate: (target - from) * progress + from
         to_vec:Pos = self.__target_value.subtract(self.__from_position)
-        self.__value_setter(to_vec.multiple(normalize_progress,normalize_progress).plus(self.__from_position.x,self.__from_position.y))
+        # to_vec.multiple expects float in 0.0~1.0; ensure result is properly positioned
+        interpolated = to_vec.multiple(normalize_progress, normalize_progress).plus(self.__from_position.x, self.__from_position.y)
+        self.__value_setter(interpolated)
 

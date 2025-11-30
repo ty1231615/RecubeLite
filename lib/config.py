@@ -1,8 +1,9 @@
 import pathlib
+from lib.util import get_font_path
 
 base_frame_rate = 60
 
-
-
-def get_font_path(name):
-    return pathlib.Path(f"asset/fonts/{name}")
+fonts = [
+    get_font_path("Greek-Freak.ttf"),
+    get_font_path("kaisoutai.ttf")
+]

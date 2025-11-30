@@ -5,6 +5,7 @@ class Pos:
     def __init__(self,x,y) -> None:
         self.__x = x
         self.__y = y
+        self.__lock = False
     def value_error(self):
         raise ValueError("整数以外は適切ではありません")
     @property
@@ -12,19 +13,25 @@ class Pos:
         return self.__x
     @x.setter
     def x(self,value):
-        if isinstance(value,int):
-            self.__x = value
+        if not self.__lock:
+            if isinstance(value,int):
+                self.__x = value
+            else:
+                self.value_error()
         else:
-            self.value_error()
+            raise Exception("このPositionはロックされています")
     @property
     def y(self):
         return self.__y
     @y.setter
     def y(self,value):
-        if isinstance(value,int):
-            self.__y = value
+        if not self.__lock:
+            if isinstance(value,int):
+                self.__y = value
+            else:
+                self.value_error()
         else:
-            self.value_error()
+            raise Exception("このPositionはロックされています")
     def above(self,increase):
         return Pos(self.x,self.y - increase)
     def below(self,increase):
@@ -36,6 +43,10 @@ class Pos:
     def move(self,x,y):
         self.x = x
         self.y = y
+    def lock(self):
+        self.__lock = True
+    def unlock(self):
+        self.__lock = False
     def movePos(self,pos):
         if isinstance(pos,Pos):
             self.x = pos.x

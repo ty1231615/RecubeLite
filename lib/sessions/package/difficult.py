@@ -1,6 +1,7 @@
 from pygame import Surface
 
-from lib.session import Session
+from lib.item import Item
+from lib.sessions.itemSession import ItemSession,ItemSessionDesign
 from lib.computer import ComputeEnemy
 from lib.player import Player
 from lib.progress import Progress
@@ -9,12 +10,12 @@ from lib.view import SessionDesignView
 from lib.registers import BlockRegister
 from lib.health import Health
 
-class FirstDifficultySession(Session):
+class FirstDifficultySession(ItemSession):
     """
     進んだステージに応じて新たな敵が出現する
     """
-    def __init__(self, surface: Surface, stage: Stage, stageLevel: int, maxStageLevel: int, health: Health, players: list[Player], enemys: list[ComputeEnemy], view: SessionDesignView, block_register:BlockRegister, addEnemys:list[ComputeEnemy], enemySpawnProgress: Progress) -> None:
-        super().__init__(surface, stage, stageLevel, maxStageLevel, health, players, enemys, view, block_register)
+    def __init__(self, surface: Surface, stage: Stage, stageLevel: int, maxStageLevel: int, health: Health, players: list[Player], enemys: list[ComputeEnemy], view: ItemSessionDesign, block_register:BlockRegister, addEnemys:list[ComputeEnemy], enemySpawnProgress: Progress, support_items:tuple[Item], assist_items:tuple[Item]) -> None:
+        super().__init__(surface, stage, stageLevel, maxStageLevel, health, players, enemys, view, block_register, support_items, assist_items)
         self.__enemy_spawn_progress = enemySpawnProgress
         self.__enemy_spawn_step = Progress(0,len(addEnemys)-1,0,1)
         self.__addEemys = addEnemys

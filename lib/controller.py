@@ -1,6 +1,4 @@
 
-from lib.player import Player
-
 import pygame
 
 class PlayerControleBinder:

@@ -5,7 +5,7 @@ from lib.player import Player
 
 class HealOrb(Item):
     def __init__(self,name="Healing orb",desc="回復することができるオーブ"):
-        super().__init__(ItemType.Support,name,desc)
+        super().__init__(ItemType.Support,name,description=desc)
     def on_touch(self, session:Session, entity:Entity):
         if isinstance(entity,Player):
             session.health.heal(1)

@@ -10,17 +10,14 @@ from lib.block import BlockData
 from lib.registers import BlockRegister
 from lib.position import Pos
 from lib.player import Player
-from lib.view import SessionDesignView, Design
+from lib.items import HealOrb
+from lib.view import Design
+from lib.sessions.itemSession import ItemSessionDesign
 from lib.computer import AstarEnemy
 from lib.controller import PlayerControleBinder
 from lib.particle.camera import CURRENT_CAMERA
 
 pygame.init()
-
-fonts = [
-    config.get_font_path("Greek-Freak.ttf"),
-    config.get_font_path("kaisoutai.ttf")
-]
 
 screen = pygame.display.set_mode((1000,1000))
 clock = pygame.time.Clock()
@@ -44,21 +41,23 @@ session = FirstDifficultySession(
     Stage(32,19,1),
     100,
     500,
-    Health(5,5),
+    Health(5,10),
     [
         player
     ],
     [
         AstarEnemy(Pos(0,0),60,1,True),
     ],
-    SessionDesignView(
+    ItemSessionDesign(
         block_design,
         entity_font.render("▲",True,(250, 177, 47)),
         entity_font.render("▲",True,(221, 3, 3)),
         5,
         pygame.font.SysFont("arial",150),
         pygame.font.SysFont("arial",80),
-        pygame.font.Font(str(fonts[1]),150)
+        pygame.font.Font(str(config.fonts[1]),150),
+        entity_font.render("■",True,(0, 126, 110)),
+        entity_font.render("■",True,(191, 26, 26))
     ),
     block_register,
     [
@@ -84,7 +83,9 @@ session = FirstDifficultySession(
     AstarEnemy(Pos(0,0),10,1,False),
     AstarEnemy(Pos(0,0),2,1,False),
     ],
-    Progress(0,5,0,1)
+    Progress(0,5,0,1),
+    (HealOrb(),HealOrb(),HealOrb(),HealOrb()),
+    ()
 )
 
 session.gameInit()
@@ -105,6 +106,8 @@ player_controller = [
         PlayerControleBinder(pygame.K_ESCAPE,lambda: session.switch_pause())
     ]
 
+player.set_controller(player_controller)
+
 session.start()
 
 while runnable:
@@ -114,9 +117,10 @@ while runnable:
         if event.type == pygame.QUIT:
             runnable = False
         if event.type == pygame.KEYDOWN:
-            for handler in player_controller:
-                if handler.key == event.key:
-                    handler.command()
+            for player in session.get_players():
+                for handler in player.controller:
+                    if handler.key == event.key:
+                        handler.command()
     pygame.display.update()
     clock.tick(config.base_frame_rate)
 

@@ -14,6 +14,9 @@ class Health:
         self.__hp -= value
     def heal(self,value:int):
         self.__hp += value
+    def check_hp(self):
+        if self.hp > self.max_hp:
+            self.hp = self.max_hp
     def get_hit_point(self):
         result = util.minimum(util.maximum(self.__hp_modifier(self.__hp),self.__max_hp_modifier(self.__max_hp)),0)
         if result <= 0:
@@ -25,7 +28,7 @@ class Health:
         return self.__dead
     @property
     def hp(self):
-        return self.__hp
+        return self.__hp_modifier(self.__hp)
     @hp.setter
     def hp(self,value):
         if isinstance(value,int):
@@ -37,7 +40,7 @@ class Health:
         return self.__hp_modifier
     @property
     def max_hp(self):
-        return self.__max_hp
+        return self.__max_hp_modifier(self.__max_hp)
     @property
     def max_hp_modifier(self):
         return self.__max_hp_modifier

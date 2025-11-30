@@ -98,7 +98,7 @@ class Session:
         else:
             self.__pause = True
     def on_pause(self):
-        text = self.view.gameOverFont.render("Puase ...",True,(113, 50, 202))
+        text = self.view.gameOverFont.render("Pause ...",True,(113, 50, 202))
         self.__surface.blit(
             text,
             (self.__surface.get_width() / 2 - text.get_width() / 2,200)
@@ -122,6 +122,7 @@ class Session:
         if len(self.__players) != 0: #プレイヤーがいる場合のみゴールを作成
             self.__goal_position = self.decide_arrive_goal_positions(random.choice(self.__players).position,100)
             self.stage.createGoal(self.__goal_position)
+        return positions
     def tick(self) -> pygame.Surface:
         #この関数を毎フレーム呼び出す
         if self.__game_over:

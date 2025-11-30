@@ -37,13 +37,19 @@ class TaskType(Enum):
     STANDING = 1
     AFTER_STANDING = 2
     WHILE = 3
+    WHILE_AFTER_STANDING = 4
 
 class Task:
-    def __init__(self, run:types.FunctionType|types.MethodType|types.LambdaType, taskType, delay=Progress(0,0,0,1), repeat=Progress(0,1,0,1), repeatDelay=Progress(0,0,0,1), complete:bool=False):
+    def __init__(self, run:types.FunctionType|types.MethodType|types.LambdaType, taskType, delay:Progress|None=None, repeat:Progress|None=None, repeatDelay:Progress|None=None, complete:bool=False):
+        """Avoid mutable default Progress objects in the signature.
+
+        If callers don't supply Progress objects, create fresh instances here.
+        """
         self.__type = taskType
-        self.__delay = delay
-        self.__repeat = repeat
-        self.__repeatProgress = repeatDelay
+        # create fresh Progress instances when None to avoid shared defaults
+        self.__delay = delay if delay is not None else Progress(0,0,0,1)
+        self.__repeat = repeat if repeat is not None else Progress(0,1,0,1)
+        self.__repeatProgress = repeatDelay if repeatDelay is not None else Progress(0,0,0,1)
         self.__run = run
         Task._signature_check(self.__run)
         self.__complete = complete
@@ -114,7 +120,7 @@ class TaskLine:
                     if index != 0:
                         break
                     self.task_compute(task)
-                elif task.taskType == TaskType.AFTER_STANDING:
+                elif task.taskType == TaskType.AFTER_STANDING or task.taskType == TaskType.WHILE_AFTER_STANDING:
                     self.task_compute(task)
                     break
                 elif task.taskType == TaskType.CONTINUE:
@@ -130,7 +136,7 @@ class TaskLine:
     def task_compute(self,task:Task,*arg,**kwarg):
         if not task.is_complete:
             taskController = TaskController(task,self.__before_return)
-            if task.taskType == TaskType.WHILE:
+            if task.taskType == TaskType.WHILE or task.taskType == TaskType.WHILE_AFTER_STANDING:
                 task.run(taskController)
                 return
             if task.delay.complete:
@@ -138,6 +144,7 @@ class TaskLine:
                     _return = task.run(taskController)
                     task.repeat.next()
                     if task.repeat.complete:
+                        task.repeat.reset()
                         task.complete()
                         self.__before_return = _return
                         return
