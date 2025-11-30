@@ -53,6 +53,13 @@ class ItemSelection(TaskLineGenerater):
         )
 
         line.add(
+            Task(
+                self.__bind_selecter,
+                TaskType.CONTINUE
+            )
+        )
+
+        line.add(
             PositionKeyFrame(
                 StartPosition,
                 TargetPosition,
@@ -60,13 +67,6 @@ class ItemSelection(TaskLineGenerater):
                 TaskType.AFTER_STANDING,
                 repeat=Progress(0,util.frame_to_second(0.5),0,1),
                 easing_format=easing.ease_out_expo
-            )
-        )
-
-        line.add(
-            Task(
-                self.__bind_selecter,
-                TaskType.CONTINUE
             )
         )
 
