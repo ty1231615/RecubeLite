@@ -46,34 +46,38 @@ class Progress:
             return max
         return min
     def act(self):
-        if self.__current > self.__max:
-            self.__current = self.__max
+        if self.current > self.max:
+            self.__current = self.max
             self.__complete = True
             return
-        elif self.__current < self.__min:
-            self.__current = self.__min
+        elif self.current < self.min:
+            self.__current = self.min
             self.__startline = True
             return
-        if self.__current == self.__max:
+        if self.current == self.max:
             self.__complete = True
         else:
             self.__complete = False
-        if self.__current == self.__min:
+        if self.current == self.min:
             self.__startline = True
         else:
             self.__startline = False
     def reset(self):
         self.current = self.min
+    def reset_modifier(self):
         self.CURRENT_MODIFIER.clear()
         self.MAX_MODIFIER.clear()
         self.MIN_MODIFIER.clear()
-    def normalize(self):
+    @classmethod
+    def Normalize(cls,max,min,current):
         # protect against division by zero when max == min
-        denom = (self.max - self.min)
+        denom = (max - min)
         if denom == 0:
             # if no range, return 1.0 when at or beyond max, otherwise 0.0
-            return 1.0 if self.current >= self.max else 0.0
-        return (self.current - self.min) / denom
+            return 1.0 if current >= max else 0.0
+        return (current - min) / denom
+    def normalize(self):
+        return Progress.Normalize(self.max,self.min,self.current)
     @property
     def complete(self):
         self.act()
@@ -97,15 +101,14 @@ class Progress:
     @property
     def current(self):
         self.check()
-        self.act()
-        return self.__current + self.CURRENT_MODIFIER.total()
+        return self.__current_modifier(self.__current)
     @current.setter
     def current(self,value):
         if isinstance(value,int):
             self.__current = value
     @property
     def max(self):
-        return self._check_max(self.__max + self.MAX_MODIFIER.total(),self.__min)
+        return self._check_max(self.MAX_MODIFIER(self.__max),self.__min)
     @max.setter
     def max(self,value):
         if isinstance(value,int):
@@ -113,7 +116,7 @@ class Progress:
             self.check()
     @property
     def min(self):
-        return self._check_min(self.__min + self.MIN_MODIFIER.total(),self.__max)
+        return self._check_min(self.MIN_MODIFIER(self.__min),self.__max)
     @min.setter
     def min(self,value):
         if isinstance(value,int):
@@ -121,7 +124,7 @@ class Progress:
             self.check()
     @property
     def increase(self):
-        return self.__increase + self.INCREASE_MODIFIER.total()
+        return self.INCREASE_MODIFIER(self.__increase)
     @increase.setter
     def increase(self,value):
         if isinstance(value,int):

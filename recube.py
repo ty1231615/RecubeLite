@@ -10,7 +10,7 @@ from lib.block import BlockData
 from lib.registers import BlockRegister
 from lib.position import Pos
 from lib.player import Player
-from lib.items import HealOrb,StunOrb
+from lib.items import HealOrb,StunOrb,SlowOrb
 from lib.view import Design
 from lib.sessions.itemSession import ItemSessionDesign
 from lib.computer import AstarEnemy
@@ -51,7 +51,8 @@ session = FirstDifficultySession(
     ItemSessionDesign(
         block_design,
         entity_font.render("▲",True,(250, 177, 47)),
-        entity_font.render("▲",True,(221, 3, 3)),
+        entity_font,
+        "▲",
         5,
         pygame.font.SysFont("arial",150),
         pygame.font.SysFont("arial",80),
@@ -84,7 +85,7 @@ session = FirstDifficultySession(
     AstarEnemy(Pos(0,0),4,1,False),
     ],
     Progress(0,5,0,1),
-    (HealOrb(),StunOrb()),
+    (HealOrb(),StunOrb(),SlowOrb(5)),
     ()
 )
 

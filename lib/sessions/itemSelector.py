@@ -5,10 +5,15 @@ from lib.controller import PlayerControleBinder
 from lib.animation.keyframe import PositionKeyFrame
 from lib.session import Session
 from lib.player import Player
-from lib.item import Item
+from lib.item import Item,ItemBox
 from lib import easing
 from lib import util
 import pygame
+
+#annotation
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from lib.sessions.itemSession import ItemSession
 
 #アイテムボックスのアイテムを選択するタスク
 class ItemSelection(TaskLineGenerater):
@@ -25,25 +30,28 @@ class ItemSelection(TaskLineGenerater):
         pygame.K_9,
         pygame.K_0
     ]
-    def __init__(self,session:Session, select_player:Player, font_path:str, movement_height:int, items:tuple[Item], description_color=(226, 133, 46)) -> None:
+    def __init__(self,session:'ItemSession', select_player:Player, touched_item_box:ItemBox, replace_block_position:Pos, font_path:str, movement_height:int, items:tuple[Item], description_color=(226, 133, 46)):
         self.__session = session
         self.__surface = self.__session.surface
         self.__items = items
         self.__movement_height = movement_height
         self.__center_position = Pos(0,0)
-        self.__padding = 0
-        self.__font = None
         self.__font_path = font_path
         self.__description_color = description_color
         self.__select_player = select_player
+        self.__replace_block_position = replace_block_position
+        self.__item_box = touched_item_box
         self.__selected = False
+        self.init()
+    def init(self):
+        self.__padding = self.__surface.get_width() / (len(self.__items)+1)
+        self.__font = pygame.font.Font(self.__font_path,int(self.__padding / 13))
     def CreateTaskLine(self) -> TaskLine:
         line = TaskLine()
-        self.__padding = self.__surface.get_width() / (len(self.__items)+1)
+        self.init()
         StartPosition = Pos(self.__surface.get_width() / 2,-self.__padding-self.__padding / 13)
         TargetPosition = StartPosition.plus(0,self.__movement_height)
         self.__center_position = StartPosition.copy()
-        self.__font = pygame.font.Font(self.__font_path,int(self.__padding / 13))
 
         line.add(
             Task(
@@ -104,8 +112,10 @@ class ItemSelection(TaskLineGenerater):
         if self.__selected:
             controller.complete()
     def __select(self,index):
-        print(index)
-        self.__session.on_item(self.__items[index],self.__select_player)
+        #アイテムの取得とアイテムボックスの状態を変更
+        self.__session.on_item(self.__items[index],self.__select_player,self.__replace_block_position)
+        self.__item_box.invalid_select() #選択状態を解除
+
         for index in range(len(self.__items)):
             self.__select_player.remove_controle(ItemSelection.SELECT_KEY[index])
         self.__selected = True

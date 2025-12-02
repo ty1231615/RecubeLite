@@ -36,6 +36,7 @@ class Session:
         self.__task_line_handler = TaskLineLoader()
         self.enemy_stayframe = 120
         self.__pause = False
+        self.__max_speed_color = (221, 3, 3)
         self.__stay_clock = Progress(0, 1000, 0, -1) #プログレスが1以上ならtickで何も行わない
     def gameInit(self):
         self.__count_stage = 1
@@ -115,9 +116,6 @@ class Session:
             position = random.choice(positions)
             enemy.position.movePos(position)
             positions.remove(position)
-            #ステージのレベルごとのコンピューターの計算速度を更新
-            current_level = self.stage.level
-            enemy.moveProgress.MAX_MODIFIER.add(Session.LEVEL_MODIFIER,-current_level)
             enemy.stayProgress.current = self.enemy_stayframe
         if len(self.__players) != 0: #プレイヤーがいる場合のみゴールを作成
             self.__goal_position = self.decide_arrive_goal_positions(random.choice(self.__players).position,100)
@@ -235,7 +233,8 @@ class Session:
     def draw_enemys(self):
         for enemy in self.get_enemys():
             pos = self.__render_details[enemy.position.y][enemy.position.x]
-            self.__surface.blit(self.__view.enemyDesign, (pos.x - self.view.blockPadding/2, pos.y))
+            enemy_surface = self.__view.enemyFont.render(self.__view.enemyText,True,enemy.color.get( Progress.Normalize(5, 60, enemy.moveProgress.max) ))
+            self.__surface.blit(enemy_surface, (pos.x - self.view.blockPadding/2, pos.y))
     def compute_enemys(self):
         for enemy in self.get_enemys():
             enemy.moveNextStep(self)

@@ -64,11 +64,15 @@ class ComputeEnemy(Enemy):
     def __init__(self, position: Pos,computeSpeed:int, attackDamage:int, valid:bool) -> None:
         super().__init__(position,attackDamage,valid)
         self.__speed = computeSpeed
+        self.__first_speed = computeSpeed
         self.__moveProgress = Progress(0,self.__speed,0,1)
         self.__stayProgress = Progress(0,200,0,-1)
     @property
     def ComputeSpeed(self):
         return self.__speed
+    @property
+    def firstSpeed(self):
+        return self.__first_speed
     @property
     def moveProgress(self):
         return self.__moveProgress

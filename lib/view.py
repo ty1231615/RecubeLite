@@ -12,10 +12,11 @@ class Design(TypeRegister):
         return super().get(key)
 
 class SessionDesignView:
-    def __init__(self, blockDesign: Design, player: pygame.Surface, enemy: pygame.Surface, blockPadding: int, gameOverFont: pygame.font.Font, resultTextFont: pygame.font.Font, upperNoticeFont: pygame.font.Font) -> None:
+    def __init__(self, blockDesign: Design, player: pygame.Surface, enemy: pygame.font.Font, enemy_text:str, blockPadding: int, gameOverFont: pygame.font.Font, resultTextFont: pygame.font.Font, upperNoticeFont: pygame.font.Font) -> None:
         self.__block_design = blockDesign
         self.__player_design = player
-        self.__enemy_design = enemy
+        self.__enemy_font = enemy
+        self.__enemy_text = enemy_text
         self.__block_padding = blockPadding
         self.__game_over_font = gameOverFont
         self.__result_text_font = resultTextFont
@@ -30,8 +31,11 @@ class SessionDesignView:
     def playerDesign(self):
         return self.__player_design
     @property
-    def enemyDesign(self):
-        return self.__enemy_design
+    def enemyFont(self):
+        return self.__enemy_font
+    @property
+    def enemyText(self):
+        return self.__enemy_text
     @property
     def blockPadding(self):
         return self.__block_padding
