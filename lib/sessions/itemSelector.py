@@ -10,7 +10,7 @@ from lib import easing
 from lib import util
 import pygame
 
-#annotation
+# annotation
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from lib.sessions.itemSession import ItemSession

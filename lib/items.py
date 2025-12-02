@@ -8,6 +8,7 @@ from lib.block import BlockData
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from lib.sessions.itemSession import ItemSession
+    from lib.session import Session
 
 
 class HealOrb(Item):
@@ -35,7 +36,7 @@ class StunOrb(Item):
         return False
 
 class SlowOrb(Item):
-    def __init__(self, power:int, name: str="Slow Orb", namespace:str="item:slow_orb", image_name: str = "slow_orb.png", description: str = "エネミーの移動速度を少し下げます", replace_block_id=BlockData.AIR):
+    def __init__(self, power:int, name: str="Slow Orb", namespace:str="item:slow_orb", image_name: str = "slow_orb.png", description: str = "エネミーの移動速度を少し下げる", replace_block_id=BlockData.AIR):
         super().__init__(ItemType.Assist, name, namespace, image_name, description, replace_block_id)
         self.__power = power
     @property
@@ -46,5 +47,16 @@ class SlowOrb(Item):
             for enemy in session.get_enemys():
                 enemy.moveProgress.MAX_MODIFIER.increase_with_create(self.namespace,self.power)
             session.player_wave_particle(entity,(140, 0, 255),20,2)
+            return True
+        return False
+
+class ReductionBlockOrb(Item):
+    def __init__(self, reduction:int, name="Reduction Block Orb", namespace="item:reduction_block_orb", image_name = "reduction_block_orb.png", description = "次のステージでのブロック生成量を下げる", replace_block_id = BlockData.AIR):
+        super().__init__(ItemType.Support, name, namespace, image_name, description, replace_block_id)
+        self.__reduction_count = reduction
+    def on_touch(self, session:'Session', entity):
+        if isinstance(entity,Player):
+            session.stage.levelModifier.increase_with_create(self.namespace, -self.__reduction_count)
+            ShakingCamera(Progress(0,20,0,1),-15,15)
             return True
         return False

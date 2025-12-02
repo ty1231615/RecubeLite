@@ -10,7 +10,7 @@ from lib.block import BlockData
 from lib.registers import BlockRegister
 from lib.position import Pos
 from lib.player import Player
-from lib.items import HealOrb,StunOrb,SlowOrb
+from lib.items import HealOrb,StunOrb,SlowOrb,ReductionBlockOrb
 from lib.view import Design
 from lib.sessions.itemSession import ItemSessionDesign
 from lib.computer import AstarEnemy
@@ -41,7 +41,7 @@ session = FirstDifficultySession(
     Stage(32,19,1),
     100,
     500,
-    Health(5,10),
+    Health(5,1000),
     [
         player
     ],
@@ -85,7 +85,7 @@ session = FirstDifficultySession(
     AstarEnemy(Pos(0,0),4,1,False),
     ],
     Progress(0,5,0,1),
-    (HealOrb(),StunOrb(),SlowOrb(5)),
+    (HealOrb(),StunOrb(),SlowOrb(5),ReductionBlockOrb(4)),
     ()
 )
 

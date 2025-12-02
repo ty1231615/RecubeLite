@@ -1,5 +1,6 @@
 from lib.block import BlockData
 from lib.registers import BlockRegister
+from lib.modifier import Modifier
 from lib.position import Pos
 
 import random
@@ -9,6 +10,7 @@ class Stage:
         self.__width_size = width_size
         self.__height_size = height_size
         self.__level = level
+        self.__level_modifier = Modifier()
         self.__stage = Stage.makeStage(self.__width_size,self.__height_size)
         Stage.makeAroundWall(self.__stage)
     @property
@@ -16,11 +18,14 @@ class Stage:
         return self.__stage
     @property
     def level(self):
-        return self.__level
+        return self.__level_modifier(self.__level)
     @level.setter
     def level(self,value):
         if isinstance(value,int):
             self.__level = value
+    @property
+    def levelModifier(self):
+        return self.__level_modifier
     @property
     def width(self):
         return self.__width_size
@@ -39,6 +44,7 @@ class Stage:
         Stage.makeAroundWall(self.__stage)
     def ScatterWall(self,maximum):
         level = self.level
+        print(level)
         if level > maximum:
             level = maximum
         for i in range(level):

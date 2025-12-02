@@ -116,6 +116,7 @@ class Session:
             position = random.choice(positions)
             enemy.position.movePos(position)
             positions.remove(position)
+            enemy.moveProgress.MAX_MODIFIER.increase_with_create(Session.LEVEL_MODIFIER,-1)
             enemy.stayProgress.current = self.enemy_stayframe
         if len(self.__players) != 0: #プレイヤーがいる場合のみゴールを作成
             self.__goal_position = self.decide_arrive_goal_positions(random.choice(self.__players).position,100)
@@ -139,6 +140,10 @@ class Session:
         self.task_line_handler.tick() #タスクハンドラーの実行
         SimpleTask.AllInstanceRun() #シンプルタスクの実行
         return self.__surface
+    def set_max_block_level(self,level:int):
+        if level < 0:
+            level = 0
+        self.__maxStageLevel = level
     def arrive_position(self,position:Pos,step:int=100,visited=[]) -> list[Pos]:
         if step <= 0:
             return visited
@@ -174,7 +179,7 @@ class Session:
         return False
     def goal(self):
         self.__count_stage += 1
-        self.stage.level += 1
+        self.stage.levelModifier.increase_with_create(Session.LEVEL_MODIFIER,1)
         self.loadLevel()
         self.all_player_wave_particle(20,10)
         self.notice_now_stage()
@@ -274,6 +279,9 @@ class Session:
     @property
     def stage(self):
         return self.__stage
+    @property
+    def max_stage_level(self):
+        return self.__maxStageLevel
     @property
     def health(self):
         return self.__health
