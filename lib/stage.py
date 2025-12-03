@@ -44,7 +44,6 @@ class Stage:
         Stage.makeAroundWall(self.__stage)
     def ScatterWall(self,maximum):
         level = self.level
-        print(level)
         if level > maximum:
             level = maximum
         for i in range(level):

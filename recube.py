@@ -31,7 +31,7 @@ block_design.register(BlockData.AIR, block_font.render("□",True,(0,0,0)))
 block_design.register(BlockData.WALL, block_font.render("■",True,(0,0,0)))
 block_design.register(BlockData.GOAL, block_font.render("■",True,(0, 70, 255)))
 
-player = Player(Pos(0,0))
+player = Player(Pos(0,0),10)
 player.setSpeed(1)
 
 block_register = BlockRegister.DefaultRegister()
@@ -92,16 +92,16 @@ session = FirstDifficultySession(
 session.gameInit()
 
 player_controller = [
-        PlayerControleBinder(pygame.K_w,lambda: player.above(session)),
-        PlayerControleBinder(pygame.K_s,lambda: player.below(session)),
-        PlayerControleBinder(pygame.K_a,lambda: player.left(session)),
-        PlayerControleBinder(pygame.K_d,lambda: player.right(session)),
+        PlayerControleBinder(pygame.K_w,lambda: player.msp_above(session),hold=True).setProgresser(player.MSP_ABOVE),
+        PlayerControleBinder(pygame.K_s,lambda: player.msp_below(session),hold=True).setProgresser(player.MSP_BELOW),
+        PlayerControleBinder(pygame.K_a,lambda: player.msp_left(session),hold=True).setProgresser(player.MSP_LEFT),
+        PlayerControleBinder(pygame.K_d,lambda: player.msp_right(session),hold=True).setProgresser(player.MSP_RIGHT),
         #矢印でも操作できるようにする
-        PlayerControleBinder(pygame.K_UP,lambda: player.above(session)),
-        PlayerControleBinder(pygame.K_DOWN,lambda: player.below(session)),
-        PlayerControleBinder(pygame.K_LEFT,lambda: player.left(session)),
-        PlayerControleBinder(pygame.K_RIGHT,lambda: player.right(session)),
-        #スペースでリロード
+        PlayerControleBinder(pygame.K_UP,lambda: player.msp_above(session),hold=True).setProgresser(player.MSP_ABOVE),
+        PlayerControleBinder(pygame.K_DOWN,lambda: player.msp_below(session),hold=True).setProgresser(player.MSP_BELOW),
+        PlayerControleBinder(pygame.K_LEFT,lambda: player.msp_left(session),hold=True).setProgresser(player.MSP_LEFT),
+        PlayerControleBinder(pygame.K_RIGHT,lambda: player.msp_right(session),hold=True).setProgresser(player.MSP_RIGHT),
+        #スペースでリロード,
         PlayerControleBinder(pygame.K_SPACE,lambda: session.check_restart()),
         #ESCでポーズ
         PlayerControleBinder(pygame.K_ESCAPE,lambda: session.switch_pause())
@@ -114,14 +114,24 @@ session.start()
 while runnable:
     screen.fill((255,255,255))
     screen.blit(session.tick(),CURRENT_CAMERA.to_tuple())
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             runnable = False
         if event.type == pygame.KEYDOWN:
             for player in session.get_players():
                 for handler in player.controller:
-                    if handler.key == event.key:
+                    if event.key == handler.key:
+                        handler.resetProgress()
                         handler.command()
+    
+    press_key = pygame.key.get_pressed()
+
+    for player in session.get_players():
+        for handler in player.controller:
+            if handler.is_hold:
+                if press_key[handler.key]:
+                    handler.command()
     pygame.display.update()
     clock.tick(config.base_frame_rate)
 

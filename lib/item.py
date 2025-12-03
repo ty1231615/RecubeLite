@@ -37,7 +37,7 @@ class Item:
     @property
     def replace_block_id(self):
         return self.__replace_block_id
-    
+
 class ItemBox(BlockData):
     def __init__(self,items:tuple[Item], selecting=False):
         super().__init__(True, False)
