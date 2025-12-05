@@ -118,11 +118,12 @@ class Session:
             positions.remove(position)
             enemy.moveProgress.MAX_MODIFIER.increase_with_create(Session.LEVEL_MODIFIER,-1)
             enemy.stayProgress.current = self.enemy_stayframe
-        if len(self.__players) != 0: #プレイヤーがいる場合のみゴールを作成
-            self.__goal_position = self.decide_arrive_goal_positions(random.choice(self.__players).position,100)
-            self.stage.createGoal(self.__goal_position)
-            if self.__goal_position in positions:
-                positions.remove(self.__goal_position)
+        self.__goal_position = self.decide_arrive_goal_positions(random.choice(self.__players).position,100)
+        self.stage.createGoal(self.__goal_position)
+        if self.__goal_position in positions:
+            positions.remove(self.__goal_position)
+        for player in self.get_players():
+            self.on_move(player)
         return positions
     def tick(self) -> pygame.Surface:
         #この関数を毎フレーム呼び出す
@@ -164,9 +165,7 @@ class Session:
         return visited
     def decide_arrive_goal_positions(self,fromPosition:Pos,step:int=1000) -> Pos:
         arrive_positions = self.arrive_position(fromPosition,step,[])
-        if fromPosition in arrive_positions:
-            arrive_positions.remove(fromPosition)
-        if len(arrive_positions) == 0:
+        if len(arrive_positions) <= 1:
             return fromPosition
         return random.choice(arrive_positions)
     def can_move(self,position:Pos) -> bool:
