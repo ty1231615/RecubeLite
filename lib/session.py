@@ -4,16 +4,16 @@ from lib.player import Player
 from lib.computer import ComputeEnemy
 from lib.view import SessionDesignView
 from lib.position import Pos
-from lib.registers import BlockRegister
+from package.registers import BlockRegister
 from lib.block import BlockData
 from lib.task import SimpleTask
 from lib.progress import Progress
 from lib.health import Health
 from lib import config
 from lib.task import TaskLineLoader
-from lib.particle.notice.popup_notice import UpperNotice
-from lib.particle.shaking import ShakingCamera
 from lib import util
+from package.particle.notice.popup_notice import UpperNotice
+from package.particle.shaking import ShakingCamera
 
 import pygame
 import random

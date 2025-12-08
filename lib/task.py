@@ -1,9 +1,8 @@
-
+import types
+import inspect
 from enum import Enum
 from lib.progress import Progress
 from lib.register import NamespaceRegister
-import types
-import inspect
 
 class SimpleTask:
     _INSTANCE = []

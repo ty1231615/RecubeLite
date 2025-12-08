@@ -4,7 +4,7 @@ from lib.computer import ComputeEnemy
 from lib.entity import Entity
 from lib.health import Health
 from lib.player import Player
-from lib.registers import BlockRegister
+from package.registers import BlockRegister
 from lib.session import Session
 from lib.config import fonts
 from lib.stage import Stage
@@ -13,7 +13,7 @@ from lib.position import Pos
 from lib.util import safe_change_grid
 from lib.view import SessionDesignView
 from lib.item import Item,ItemBox
-from lib.sessions.itemBox import NormalItemBox
+from package.sessions.itemBox import NormalItemBox
 
 import random,pygame
 

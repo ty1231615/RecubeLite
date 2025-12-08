@@ -1,21 +1,23 @@
 import pygame
 
 import lib.config as config
-from lib.sessions.package.difficult import FirstDifficultySession
 from lib import config
 from lib.progress import Progress
 from lib.stage import Stage
 from lib.health import Health
 from lib.block import BlockData
-from lib.registers import BlockRegister
 from lib.position import Pos
 from lib.player import Player
-from lib.items import HealOrb,StunOrb,SlowOrb,ReductionBlockOrb
 from lib.view import Design
-from lib.sessions.itemSession import ItemSessionDesign
 from lib.computer import AstarEnemy
 from lib.controller import PlayerControleBinder
-from lib.particle.camera import CURRENT_CAMERA
+from lib.camera import CURRENT_CAMERA
+from package.sessions.itemSession import ItemSessionDesign
+from package.items import HealOrb,StunOrb,SlowOrb,ReductionBlockOrb
+from package.registers import BlockRegister
+from package.sessions.difficult import FirstDifficultySession
+
+
 
 pygame.init()
 

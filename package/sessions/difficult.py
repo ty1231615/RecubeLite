@@ -1,14 +1,14 @@
 from pygame import Surface
 
 from lib.item import Item
-from lib.sessions.itemSession import ItemSession,ItemSessionDesign
 from lib.computer import ComputeEnemy
 from lib.player import Player
 from lib.progress import Progress
 from lib.stage import Stage
 from lib.view import SessionDesignView
-from lib.registers import BlockRegister
+from package.registers import BlockRegister
 from lib.health import Health
+from package.sessions.itemSession import ItemSession,ItemSessionDesign
 
 class FirstDifficultySession(ItemSession):
     """

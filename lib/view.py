@@ -1,7 +1,7 @@
-from lib.particle.waveCircle import WaveCircle
 from lib.progress import Progress
 from lib import easing
 from lib.register import TypeRegister
+from package.particle.waveCircle import WaveCircle
 
 import pygame
 

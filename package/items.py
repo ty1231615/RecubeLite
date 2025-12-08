@@ -1,13 +1,14 @@
 from lib.item import Item,ItemType
-from lib.particle.shaking import ShakingCamera
 from lib.progress import Progress
 from lib.entity import Entity
 from lib.player import Player
 from lib.block import BlockData
+from package.particle.shaking import ShakingCamera
+
 # annotation
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from lib.sessions.itemSession import ItemSession
+    from package.sessions.itemSession import ItemSession
     from lib.session import Session
 
 

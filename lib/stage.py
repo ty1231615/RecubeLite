@@ -1,7 +1,7 @@
 from lib.block import BlockData
-from lib.registers import BlockRegister
 from lib.modifier import Modifier
 from lib.position import Pos
+from package.registers import BlockRegister
 
 import random
 

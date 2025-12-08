@@ -3,12 +3,12 @@ from lib.entity import Entity
 from lib.player import Player
 from lib.config import fonts
 from lib.position import Pos
-from lib.sessions.itemSelector import ItemSelection
+from package.sessions.itemSelector import ItemSelection
 
 # annotation
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from lib.sessions.itemSession import ItemSession
+    from package.sessions.itemSession import ItemSession
 
 
 class NormalItemBox(ItemBox):

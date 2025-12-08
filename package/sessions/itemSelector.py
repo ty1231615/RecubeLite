@@ -13,7 +13,7 @@ import pygame
 # annotation
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from lib.sessions.itemSession import ItemSession
+    from package.sessions.itemSession import ItemSession
 
 #アイテムボックスのアイテムを選択するタスク
 class ItemSelection(TaskLineGenerater):

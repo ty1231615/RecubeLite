@@ -1,4 +1,4 @@
-from lib.particle.camera import Camera,CURRENT_CAMERA
+from lib.camera import Camera,CURRENT_CAMERA
 from lib.task import SimpleTask
 from lib.progress import Progress
 
