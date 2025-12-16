@@ -1,16 +1,19 @@
 
 import math
+from lib.modifier import Modifier
 
 class Pos:
     def __init__(self,x,y) -> None:
         self.__x = x
         self.__y = y
         self.__lock = False
+        self.__X_MODIFIER = Modifier()
+        self.__Y_MODIFIER = Modifier()
     def value_error(self):
         raise ValueError("整数以外は適切ではありません")
     @property
     def x(self):
-        return self.__x
+        return self.__X_MODIFIER(self.__x)
     @x.setter
     def x(self,value):
         if not self.__lock:
@@ -19,10 +22,10 @@ class Pos:
             else:
                 self.value_error()
         else:
-            raise Exception("このPositionはロックされています")
+            raise Exception(f"この < {self} > はロックされています")
     @property
     def y(self):
-        return self.__y
+        return self.__Y_MODIFIER(self.__y)
     @y.setter
     def y(self,value):
         if not self.__lock:
@@ -57,6 +60,8 @@ class Pos:
         if isinstance(pos,Pos):
             return pos.x == self.x and pos.y == self.y
         return False
+    def equals_xy(self,x,y):
+        return self.x == x and self.y == y
     def toTuple(self):
         return (self.x,self.y)
     def distanceTo(self, to) -> float:

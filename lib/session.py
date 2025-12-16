@@ -106,6 +106,7 @@ class Session:
         )
     def loadLevel(self):
         self.createStage()
+        self.make_render_details()
         self.draw_stage()
         positions = self.stage.getAirSpace(self.__block_register)
         for player in self.get_players():
@@ -211,7 +212,8 @@ class Session:
         self.__surface.blit(game_over_text,(self.__surface.get_width() / 2 - game_over_text.get_width() / 2,self.__surface.get_height() / 5))
         result_text = self.__view.resultTextFont.render(f"STAGE REACHED: {self.__count_stage}",True,(255,255,255))
         self.__surface.blit(result_text,(self.__surface.get_width() / 2 - result_text.get_width() / 2,self.__surface.get_height() / 2))
-    def draw_stage(self):
+    
+    def make_render_details(self):
         base_x = 0
         base_y = 0
         for y in range(len(self.stage.stage)):
@@ -219,17 +221,27 @@ class Session:
             base_y += self.__view.blockPadding + first_block_surface.get_height()
             base_x = 0
             for x in range(len(self.stage.stage[y])):
-                no_draw = False
                 block = self.stage.stage[y][x]
                 blockSurface = self.__view.blockDesigns.get(block)
                 base_x += self.__view.blockPadding + blockSurface.get_width()
-                for entity in self.entity_itereter():
-                    if entity.position.equals(Pos(x,y)):
+                self.__render_details[y][x] = Pos(base_x,base_y)
+    def reset_render_details(self):
+        for y in range(len(self.stage.stage)):
+            for x in range(len(self.stage.stage[y])):
+                self.__render_details[y][x]
+    def draw_stage(self):
+        for y in range(len(self.stage.stage)):
+            for x in range(len(self.stage.stage[y])):
+                block = self.stage.stage[y][x]
+                blockSurface = self.__view.blockDesigns.get(block)
+                pos = self.__render_details[y][x]
+                no_draw = False
+                for entity in self.entity_itereter(): #エンティティと重なるブロックは描画しない
+                    if entity.position.equals_xy(x,y):
                         no_draw = True
-                if no_draw: #エンティティと重なっている部分のブロックは描画しない
-                    continue
-                rect = self.__surface.blit(blockSurface,(base_x,base_y))
-                self.__render_details[y][x] = Pos(rect.x,rect.y)
+                        break
+                if not no_draw:
+                    self.__surface.blit(blockSurface, (pos.x - self.view.blockPadding/2, pos.y))
     def draw_players(self):
         for player in self.get_players():
             pos = self.__render_details[player.position.y][player.position.x]
